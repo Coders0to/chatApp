@@ -1,0 +1,399 @@
+
+<script>
+/* ---------------------------
+ Particles: hearts + sparkles
+ - create both hearts and dots
+ - random positions, sizes, durations
+---------------------------- */
+(function createParticles(){
+ const parent = document.getElementById('particles');
+ const total = 28; // mix hearts + sparkles
+ for(let i=0;i<total;i++){
+  const el = document.createElement('div');
+  const isHeart = Math.random() > 0.5;
+  el.className = 'particle ' + (isHeart ? 'heart' : 'spark');
+  // random horizontal start
+  const left = Math.random()*100;
+  el.style.left = left + '%';
+  // random bottom offset
+  el.style.bottom = (Math.random()*8 - 2) + 'vh';
+  // random duration and delay
+  const dur = 10 + Math.random()*10; // 10-20s
+  const delay = Math.random()*-10; // start offset to spread
+  el.style.animationDuration = dur + 's';
+  el.style.animationDelay = delay + 's';
+  // scale & opacity
+  const scale = 0.8 + Math.random()*0.6;
+  el.style.transform = `translateY(0) scale(${scale})`;
+  // content
+  if(isHeart){
+   el.innerHTML = '❤️';
+   el.style.fontSize = (12 + Math.random()*18) + 'px';
+  } else {
+   // small sparkle dot
+   el.style.width = (4 + Math.random()*6) + 'px';
+   el.style.height = (4 + Math.random()*6) + 'px';
+   el.style.borderRadius = '50%';
+   el.style.background = `linear-gradient(180deg, ${lighten('--peach')}, ${lighten('--lilac')})`;
+   el.classList.add('spark');
+  }
+  parent.appendChild(el);
+ }
+ // helper to map css var to color with lighten fallback
+ function lighten(varName){ return getComputedStyle(document.documentElement).getPropertyValue(varName) || '#ffd7c2' }
+})();
+
+/* ---------------------------
+ Card stack + swipe logic
+---------------------------- */
+const profiles = [
+ {id:1,name:'',age:0,dist:'',bio:'',photo:'http://127.0.0.1:3000/images/no_image.webp'},
+];
+
+
+// fetch('/loadMatchesTem', {
+//     method: 'POST',
+//     headers: {
+//         'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify({})
+// })
+//   .then(res => res.json())
+//   .then(data => {
+
+//       if (data && data.profiles && data.profiles.length > 0) {
+//           $('#controlTools').removeClass('d-none');
+//           profiles.length = 0;  
+//           profiles.push(...data.profiles); 
+//           renderStack();  
+//       } else {
+//         $('#controlTools').addClass('d-none');
+//         $('#cardStack').html(`<div class="card" role="article" data-id="1" style="z-index: 100; transform: translateY(0px) scale(1); opacity: 1;height:30% !important;">
+//                                     <div class="photo" style="background-image: url(&quot;http://127.0.0.1:3000/images/no_image.webp&quot;);">
+//                                         <img class="profile-img" alt="Profile Photo" src="http://127.0.0.1:3000/images/no_image.webp"> 
+//                                     </div>
+//                                 </div>`);
+//       }
+      
+      
+//   })
+//   .catch(err => {
+//       console.log("Error:", err);
+//   });
+function loadMatchesTem() {
+  fetch('/loadMatchesTem', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.profiles && data.profiles.length > 0) {
+          $('#controlTools').removeClass('d-none');
+          profiles.length = 0;
+          profiles.push(...data.profiles);
+          console.log('profiles record',profiles);
+          renderStack();
+      } else {
+          $('#controlTools').addClass('d-none');
+          $('#cardStack').html(`
+                <div class="card" role="article" style="height:30% !important;">
+                    <div class="photo" style="background-image: url('http://127.0.0.1:3000/images/no_image.webp');">
+                        <img class="profile-img" src="http://127.0.0.1:3000/images/no_image.webp">
+                    </div>
+                </div>
+          `);
+      }
+    })
+    .catch(err => console.log("Error:", err));
+}
+
+loadMatchesTem();
+
+
+
+
+const stackEl = document.getElementById('cardStack');
+const tpl = document.getElementById('cardTpl');
+const recentList = document.getElementById('recentList');
+const chatPanel = document.getElementById('chatPanel');
+const chatAvatar = document.getElementById('chatAvatar');
+//const chatName = document.getElementById('chatName');
+const chatBody = document.getElementById('chatBody');
+
+let history = [];
+
+function createCard(p){
+ const node = tpl.content.cloneNode(true).querySelector('.card');
+ node.dataset.id = p.id;
+ console.log("p data",p);
+ node.querySelector('.photo').style.backgroundImage = `url(${p.photo})`;
+ node.querySelector('.photo .profile-img').src = p.photo;
+ node.querySelector('.cname').textContent = p.name;
+ node.querySelector('.cage').textContent = p.age;
+ node.querySelector('.cdistance').textContent = p.dist;
+ node.querySelector('.userUId').value = p.id;
+ node.querySelector('.bio').textContent = p.bio;
+ attachDrag(node);
+ return node;
+}
+
+function renderStack(){
+ stackEl.innerHTML = '';
+ const show = profiles.slice().reverse();
+ show.forEach((p,i)=>{
+  const card = createCard(p);
+  card.style.zIndex = 100 - i;
+  const scale = 1 - i*0.04;
+  const y = i*12;
+  card.style.transform = `translateY(${y}px) scale(${scale})`;
+  card.style.opacity = 1 - i*0.05;
+  stackEl.appendChild(card);
+ });
+}
+
+/* drag / swipe */
+function attachDrag(card){
+ let startX=0,startY=0,offsetX=0,offsetY=0,dragging=false;
+ const likeStamp = card.querySelector('.stamp.like');
+ const nopeStamp = card.querySelector('.stamp.nope');
+
+ function updateStamps(x){
+  const threshold = 80;
+  const opacity = Math.min(Math.abs(x)/threshold,1);
+  if(x>0){ likeStamp.style.opacity = opacity; nopeStamp.style.opacity = 0; }
+  else{ nopeStamp.style.opacity = opacity; likeStamp.style.opacity = 0; }
+ }
+
+ function onDown(e){
+  dragging=true;
+  startX = e.touches ? e.touches[0].clientX : e.clientX;
+  startY = e.touches ? e.touches[0].clientY : e.clientY;
+  card.style.transition = 'none';
+ }
+ function onMove(e){
+  if(!dragging) return;
+  const x = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+  const y = (e.touches ? e.touches[0].clientY : e.clientY) - startY;
+  offsetX = x; offsetY = y;
+  const rot = Math.min(Math.max(x/10,-25),25);
+  card.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
+  updateStamps(x);
+ }
+ function onUp(){
+  if(!dragging) return; dragging=false; card.style.transition = '';
+  const absX = Math.abs(offsetX); const threshold = 140;
+  if(absX>threshold){
+   const toRight = offsetX>0;
+   card.style.transform = `translate(${toRight?1200:-1200}px, ${offsetY}px) rotate(${toRight?35:-35}deg)`;
+   card.style.opacity = 0;
+   setTimeout(()=> commitSwipe(card.dataset.id, toRight),260);
+  } else {
+   card.style.transform = '';
+   likeStamp.style.opacity = 0; nopeStamp.style.opacity = 0;
+  }
+  offsetX=0; offsetY=0;
+ }
+
+ card.addEventListener('mousedown', onDown);
+ window.addEventListener('mousemove', onMove);
+ window.addEventListener('mouseup', onUp);
+ card.addEventListener('touchstart', onDown, {passive:true});
+ window.addEventListener('touchmove', onMove, {passive:true});
+ window.addEventListener('touchend', onUp);
+
+ // tap photo -> view profile
+ card.querySelector('.photo').addEventListener('click', (ev)=> {
+  ev.stopPropagation();
+  openProfile(card.dataset.id);
+ });
+}
+
+function commitSwipe(id, liked){
+ const idx = profiles.findIndex(p=>String(p.id)===String(id));
+ if(idx===-1) return;
+ const [removed] = profiles.splice(idx,1);
+ history.push({profile:removed,liked});
+ addToRecent(removed,liked);
+ renderStack();
+}
+
+function addToRecent(profile,liked){
+getRecentMatchesList();
+// console.log('profile record',profile);
+// console.log('liked record',liked);
+
+//  const item = document.createElement('div');
+//  item.className = 'recent-item';
+//  item.innerHTML = `<img src="${profile.photo}" alt="${profile.name}"><div class='rmeta'><strong>${profile.name}, ${profile.age}</strong><div style="color:var(--muted);font-size:13px">${profile.dist} • ${liked? 'Liked 💖':'Skipped 🙈'}</div></div>`;
+//  recentList.prepend(item);
+}
+
+/* Buttons */
+document.getElementById('likeBtn').addEventListener('click', ()=>{
+  chatPanel.classList.remove('open'); chatPanel.setAttribute('aria-hidden','true');
+ const top = stackEl.querySelector('.card'); if(!top) return;
+ $.ajax({
+        url: '/likeRecord',
+        type: 'POST',
+        data:{matches_id:top.dataset.id},
+        success: function (res) {
+        },
+        error: function (err) {
+        }
+});
+ top.style.transform = `translate(1200px,-120px) rotate(30deg)`; top.style.opacity = 0;
+ setTimeout(()=> commitSwipe(top.dataset.id,true),220);
+});
+document.getElementById('nopeBtn').addEventListener('click', ()=>{
+ const top = stackEl.querySelector('.card'); if(!top) return;
+ top.style.transform = `translate(-1200px,-60px) rotate(-30deg)`; top.style.opacity = 0;
+ setTimeout(()=> commitSwipe(top.dataset.id,false),220);
+});
+document.getElementById('superBtn').addEventListener('click', ()=>{
+ const top = stackEl.querySelector('.card'); if(!top) return;
+ top.style.transform = `translate(0px,-300px) scale(1.08)`; setTimeout(()=>{ top.style.transform = `translate(0px,-1200px)`; top.style.opacity = 0; setTimeout(()=> commitSwipe(top.dataset.id,true),240); },260);
+});
+
+document.getElementById('undoBtn').addEventListener('click', ()=>{
+ const last = history.pop();
+ if(!last) return alert('Kuch undo karne layak nahi hai');
+ profiles.push(last.profile);
+ renderStack();
+ const first = recentList.querySelector('.recent-item'); if(first) first.remove();
+});
+
+document.getElementById('rewindBtn').addEventListener('click', ()=>{
+    resetAllMatches();
+ while(history.length){ profiles.push(history.pop().profile); }
+ renderStack(); recentList.innerHTML = '';
+});
+
+/* View profile -> show in chatPanel as detail */
+const viewBtn = document.getElementById('viewBtn');
+viewBtn.addEventListener('click', ()=> {
+ const top = profiles[0]; if(!top) return alert('Koi profile nahi');
+ openProfile(top.id);
+});
+
+function openProfile(id){
+//  const p = profiles.find(x=>x.id==id) || history[history.length-1]?.profile;
+//  if(!p) return;
+//  console.log('profiles record',p);
+//  chatAvatar.src = p.photo;
+//  chatName.textContent = `${p.name}, ${p.age}`;
+//  chatBody.innerHTML = `<div style="padding:12px;border-radius:12px;background:rgba(255,255,255,0.02);color:var(--cream)"><strong>About ${p.name}</strong><p style="color:var(--muted);margin-top:6px">${p.bio}</p><p style="color:var(--muted);margin-top:6px">Distance: ${p.dist}</p></div>`;
+ chatPanel.classList.add('open'); chatPanel.setAttribute('aria-hidden','false');
+}
+
+/* ***CHANGE 2: Message button now opens an EMPTY chat*** */
+ //document.getElementById('msgBtn').addEventListener('click', ()=>{
+  //const top = profiles[0] || history[history.length-1]?.profile; if(!top) return alert('Koi profile available nahi');
+  //chatAvatar.src = top.photo;
+  //chatName.textContent = `${top.name}, ${top.age}`;
+  //chatBody.innerHTML = ''; // <-- Removed the pre-filled message
+  // chatPanel.classList.add('open'); chatPanel.setAttribute('aria-hidden','false');
+  // document.getElementById('chatInput').focus(); // <-- Bonus: focus the input
+ //});
+/* close chat */
+document.getElementById('closeChat').addEventListener('click', ()=> {
+ chatPanel.classList.remove('open'); chatPanel.setAttribute('aria-hidden','true');
+ $('#helpFab').show();
+});
+
+/* send message */
+// document.getElementById('sendBtn').addEventListener('click', ()=>{
+//  const input = document.getElementById('chatInput'); const val = input.value.trim(); if(!val) return;
+//  const el = document.createElement('div'); el.className = 'bubble me'; el.textContent = val; chatBody.appendChild(el); chatBody.scrollTop = chatBody.scrollHeight; input.value = '';
+// });
+
+/* Help modal */
+const helpFab = document.getElementById('helpFab'), helpModal = document.getElementById('helpModal'), closeHelp = document.getElementById('closeHelp');
+helpFab.addEventListener('click', ()=> { helpModal.style.display = 'flex'; helpModal.setAttribute('aria-hidden','false'); });
+closeHelp.addEventListener('click', ()=> { helpModal.style.display = 'none'; helpModal.setAttribute('aria-hidden','true'); });
+
+/* keyboard shortcuts */
+window.addEventListener('keydown', (e)=> {
+ if(e.key === 'ArrowRight') document.getElementById('likeBtn').click();
+ if(e.key === 'ArrowLeft') document.getElementById('nopeBtn').click();
+ if(e.key === ' ') { e.preventDefault(); document.getElementById('superBtn').click(); }
+});
+
+/* initial render */
+//renderStack();
+
+
+/* --- NEW: Sidebar Toggle Logic --- */
+const menuToggle = document.querySelector('.menu-toggle');
+const sidebar = document.querySelector('.sidebar');
+
+menuToggle.addEventListener('click', (e) => {
+    // Click ko page par फैलने (propagate) se roke
+    e.stopPropagation(); 
+    // Sidebar par 'sidebar-open' class lagaye/hataye
+    sidebar.classList.toggle('sidebar-open');
+});
+
+// Bonus: Agar sidebar khula hai aur user main content par click kare, to use band kar de
+document.querySelector('.main-content').addEventListener('click', () => {
+    if (sidebar.classList.contains('sidebar-open')) {
+        //sidebar.classList.remove('sidebar-open');
+    }
+});
+
+function getRecentMatchesList() {
+  $.ajax({
+    url: 'getRecentMatchesList',
+    type: 'get',
+    success: function(response) {
+      if (response.success && response.data.length > 0) {
+        const recentList = document.getElementById('recentList');
+        recentList.innerHTML = "";
+        response.data.forEach(profile => {
+          const item = document.createElement('div');
+          item.className = 'recent-item';
+          item.innerHTML = `
+            <img src="${profile.image}" alt="${profile.name}">
+            <div class='rmeta'>
+              <strong>${profile.name}</strong>
+              <div style="color:var(--muted);font-size:13px">
+                ${profile.location ? profile.location : ''} ${profile.is_online == "1" ? "• Online 🟢" : "• Offline 🔴"}
+              </div>
+            </div>
+          `;
+          recentList.prepend(item);
+        });
+      } else {
+        console.log("No recent matches found");
+      }
+    },
+    error: function(error) {
+      console.error("Error:", error);
+    }
+  });
+}
+getRecentMatchesList();
+
+function resetAllMatches(){
+    $.ajax({
+    url: 'resetAllMatches',
+    type: 'get',
+    success: function(response) {
+      if (response.success && response.statusCode == 200) {
+            loadMatchesTem();
+            getRecentMatchesList();
+      } else {
+        console.log("No recent matches found");
+      }
+    },
+    error: function(error) {
+      console.error("Error:", error);
+    }
+  });
+}
+
+
+</script>
+</body>
+</html>
+

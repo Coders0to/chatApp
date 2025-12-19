@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  	<title>Chating Web Application</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js" integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <!-- new chat boot design -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0"/>
+    <!-- end  -->
+    </script>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+
+
+.chatbot__button {
+  position: fixed;
+  bottom: 35px;
+  right: 40px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #227ebb;
+  color: #f3f7f8;
+  border: none;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+}
+.chatbot__button span {
+  position: absolute;
+}
+.show-chatbot .chatbot__button span:first-child,
+.chatbot__button span:last-child {
+  opacity: 0;
+}
+.show-chatbot .chatbot__button span:last-child {
+  opacity: 1;
+}
+.chatbot {
+  position: fixed;
+  bottom: 100px;
+  right: 40px;
+  width: 420px;
+  background-color: #f3f7f8;
+  border-radius: 15px;
+  box-shadow: 0 0 128px 0 rgba(0, 0, 0, 0.1) 0 32px 64px -48px rgba(0, 0, 0, 0.5);
+  transform: scale(0.5);
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.show-chatbot .chatbot {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+.chatbot__header {
+  position: relative;
+  background-color: #227ebb;
+  text-align: center;
+  padding: 16px 0;
+}
+.chatbot__header span {
+  display: none;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  color: #202020;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+.chatbox__title {
+  font-size: 1.4rem;
+  color: #f3f7f8;
+}
+.chatbot__box {
+  height: 510px;
+  overflow-y: auto;
+  padding: 30px 20px 100px;
+}
+.chatbot__chat {
+  display: flex;
+}
+.chatbot__chat p {
+  max-width: 75%;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  color: #202020;
+  background-color: #019ef9;
+  border-radius: 10px 10px 0 10px;
+  padding: 12px 16px;
+}
+.chatbot__chat p.error {
+  color: #721c24;
+  background: #f8d7da;
+}
+.incoming p {
+  color: #202020;
+  background: #bdc3c7;
+  border-radius: 10px 10px 10px 0;
+}
+.incoming span {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  color: #f3f7f8;
+  background-color: #227ebb;
+  border-radius: 4px;
+  text-align: center;
+  align-self: flex-end;
+  margin: 0 10px 7px 0;
+}
+.outgoing {
+  justify-content: flex-end;
+  margin: 20px 0;
+}
+.incoming {
+  margin: 20px 0;
+}
+.chatbot__input-box {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  border-top: 1px solid #227ebb;
+  background: #f3f7f8;
+  padding: 5px 20px;
+}
+.chatbot__textarea {
+  width: 100%;
+  min-height: 55px;
+  max-height: 180px;
+  font-size: 0.95rem;
+  padding: 16px 15px 16px 0;
+  color: #202020;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+}
+.chatbot__textarea::placeholder {
+  font-family: 'Poppins', sans-serif;
+}
+.chatbot__input-box span {
+  font-size: 1.75rem;
+  color: #202020;
+  cursor: pointer;
+  visibility: hidden;
+}
+.chatbot__textarea:valid ~ span {
+  visibility: visible;
+}
+
+@media (max-width: 490px) {
+  .chatbot {
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+  .chatbot__box {
+    height: 90%;
+  }
+  .chatbot__header span {
+    display: inline;
+  }
+}
+
+    </style>
+  </head>
+  <body style="background-color: #e3f1fc;overflow-x: hidden;">
+		
+		
+
+        <!-- end header -->
+
+        <div class="chat-boot-section-user chat-section">
+              
+            <div class="chatboot-header" style="text-align: center;">
+                <div class="row">
+                    <div class="col-sm-2 col-md-2 chat-section-profile">
+                    </div>
+                    <div class="col-sm-2 col-md-3"></div>
+                    <div class=" col-sm-2 col-md-2">
+                        <span class="h3 text-center chat-heading">Chatbot</span>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            <div class="chat-section1">
+                <div id="chat-container">
+                
+                </div>
+                <form id="chat-form" class="mb-3">
+                    <input type="text" placeholder="Enter Message" class="form-control1 border" id="message"  required >
+                    <!-- <input type="submit"  value="Send Msg" class="btn btn-primary submit-msg"> -->
+                </form>
+            </div>
+        </div>
+
+        <!-- <div class="row">
+            <div class="col-sm-12 col-md-8"></div>
+            <div class="col-sm-12 col-md-4 chat-boot-section chat-section">
+              
+                <div class="chatboot-header" style="text-align: center;">
+                    <div class="row">
+                        <div class="col-sm-2 col-md-2 chat-section-profile">
+                        </div>
+                        <div class="col-sm-2 col-md-3"></div>
+                        <div class=" col-sm-2 col-md-2">
+                            <span class="h3 text-center chat-heading">Chatbot</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="chat-section1">
+                    <div id="chat-container">
+                    
+                    </div>
+                    <form id="chat-form" class="mb-3">
+                        <input type="text" placeholder="Enter Message" class="form-control1 border" id="message"  required >
+                        <!-- <input type="submit"  value="Send Msg" class="btn btn-primary submit-msg"> -->
+                    <!--</form>
+                </div>
+            </div>
+        </div> -->
+
+
+<!-- new chat choot design -->
+
+<!-- end new chat boot design -->
+
+<!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteChatModal">
+    Launch static backdrop modal
+  </button> -->
+  
+  <!-- Modal -->
+  <div class="modal fade" id="deleteChatModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Delete Chat</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form id="delete-chat-form">
+            <div class="modal-body">
+                <input type="hidden" name="id" id="delete-message-id">
+                <h5 class="text-center">Are you sure to delete below chat ?</h5>
+                <p class="text-center"><b id="delete-message"></b></p>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+    var sender_id;
+    var emp_id; //receiver_id
+    var receiver_id;
+    var cust_rec_id;
+    let user_type;
+    var socket = io('/user-namespace',{
+        auth: {token:'<%= user._id %>'}
+    });
+    
+    user_type='<%= user.user_type %>';
+    if(user_type=='2')
+    {
+        $('#emp-list-heading').html(`<h3>Emp List</h3>`);
+    }
+    else if(user_type=='3')
+    {
+        $('#emp-list-heading').html(`<h3>Customers List</h3>`);
+    }
+    
+    $(document).ready(function()
+    {
+        $('.emp-list').click(function(){
+            var userId = $(this).attr('data-id');
+            var userName = $(this).attr('data-name');
+            var userImg = $(this).attr('data-img');
+
+            user_type='<%= user.user_type %>';
+           
+            if(user_type=='2')  
+            {   
+                var inputElement = document.getElementById('message');
+                inputElement.setAttribute('readonly', true);
+                emp_id = userId; 
+                sender_id = emp_id //emp is sender and cust is receiver
+
+                    $.ajax({
+                    url:'/get-customers',
+                    type:'post',
+                    data:{emp_id:emp_id},
+                    success:function(res){
+                        if(res.success){
+                            
+                            var cust_list = document.getElementById('customer-list');
+                            var cust_var = `<h3 style="margin-top:18%">Cust List (${userName})</h3><ul class="list-group">`;
+
+                            $.each(res.users,function(i,item){
+                                cust_var += `<li class="list-group-item list-group-item-dark cursor-pointer list-cust" onclick="cust_list('${item._id}','${item.name}','${item.image}');"  data-id="${item._id}" data-name="${item.name}" data-img="${item.image}">
+                                                <img src="http://127.0.0.1:3000/${item.image}" alt="" style="width:40px;height:40px;border-radius:50%;">
+                                                ${item.name}                                 
+                                                    <sup class="offline-status" id="${item._id}-status">Offline</sup>
+                                                    
+                                            </li>`;
+                            });
+                            cust_var += '</ul>';
+                            cust_list.innerHTML=cust_var;
+                        }
+                        else{
+                            alert(res.msg);
+                        }
+                    }
+
+                });
+            }
+            else if(user_type=='3')
+            {
+                
+                emp_id = userId; 
+                receiver_id = emp_id // here emp is receiver and logged in user is sender id
+                sender_id = '<%= user._id %>';
+                cust_rec_id = receiver_id;
+                $('.start-chat').hide();
+                $('.chat-section').show();
+                //code for load old chat
+                socket.emit('existsChat',{sender_id:sender_id,receiver_id:receiver_id,userName:userName,userImg:userImg}); //here receiver_id bo h jis user pr logged user click kr rha h  
+
+            }
+            
+        });
+        user_type='<%= user.user_type %>';
+        if(user_type=='4')
+        {   
+            $('#emp-list-heading').hide();
+            $('.emp-list').hide();
+            receiver_id = '<%= user.userid %>';
+            sender_id  = '<%= user._id %>';
+            cust_rec_id = receiver_id;
+            userName = '<%= user.name %>';
+            userImg = '<%= user.image %>';
+
+            $('.start-chat').hide();
+            $('.chat-section').show();
+            socket.emit('existsChat',{sender_id:sender_id,receiver_id:receiver_id,userName:userName,userImg:userImg}); //here receiver_id bo h jis user pr logged user click kr rha h  
+
+        }
+
+    });
+   
+    function cust_list(receiver_id,userName,userImg)
+    {
+        
+        cust_rec_id = receiver_id
+        // var userId = $(this).attr('data-id');
+        //emp_id = receiver_id
+        //var userName = $(this).attr('data-name');
+        //var userImg = $(this).attr('data-img');
+            
+            
+            
+            $('.start-chat').hide();
+            $('.chat-section').show();
+            
+           //code for load old chat
+            socket.emit('existsChat',{sender_id:sender_id,receiver_id:receiver_id,userName:userName,userImg:userImg}); //here receiver_id bo h jis user pr logged user click kr rha h  
+
+    }
+    
+    
+    //update user online status
+    socket.on('getOnlineUser',function(data){
+        $('#'+data.user_id+'-status').text('Online');
+        $('#'+data.user_id+'-status').addClass('online-status');
+        $('#'+data.user_id+'-status').removeClass('offline-status');
+    });
+
+    //update user offline status
+    socket.on('getOflineUser',function(data){
+        $('#'+data.user_id+'-status').text('Offline');
+        $('#'+data.user_id+'-status').addClass('offline-status');
+        $('#'+data.user_id+'-status').removeClass('online-status');
+    });
+
+    //chat save of user
+    $('#chat-form').submit(function(event){
+        event.preventDefault();
+
+        var message = $('#message').val();
+        receiver_id= cust_rec_id
+        $.ajax({
+            url:'/save-chat',
+            type:'post',
+            data:{sender_id:sender_id,receiver_id:receiver_id,message:message},
+            success:function(response){
+                if(response.success)
+                {
+                    $('#message').val('');
+                    var chat = response.data.message;
+                    console.log("chat response",response);
+                    let html = `<div class="current-user-chat" id='`+response.data._id+`'>
+                                    <p>`+chat+`
+                                        <i class="fa fa-trash" aria-hidden="true" data-id='`+response.data._id+`' data-toggle="modal" data-target="#deleteChatModal"></i>
+                                        </p>
+                                </div>`;
+                    $('#chat-container').append(html);
+                    socket.emit('newChat',response.data);
+                    socket.emit('user-not-typing',receiver_id);
+                    scrollChat();
+                   
+                }
+                else
+                {
+                    alert(response.data.msg);
+                }
+            }
+        });
+    });
+
+    socket.on('loadNewChat',function(data){
+        
+        if(sender_id == data.receiver_id && receiver_id == data.sender_id)
+        {
+            let html = `<div class="distance-user-chat" id='`+data._id+`'>
+                                    <p>`+data.message+`</p>
+                                </div>`;
+                    $('#chat-container').append(html);
+                    scrollChat();
+        }
+        
+    });
+
+    //display old chat 
+    socket.on('loaChats',function(loadchat,userName,userImg){
+        
+        $('#chat-container').html(' ');
+
+        var chats = loadchat.chats;
+       
+        console.log("chat content chats",userName);
+        $('.chat-heading').text(`${userName.userName}`);
+        $('.chat-section-profile').html(`<img src="http://127.0.0.1:3000/${userImg.userImg}" class="mt-2 chat-profile-icon" alt="" style="width:40px;height:40px;">`);
+        let html = '';
+        for(let x=0;x<chats.length;x++)
+        {
+            let addClass = '';
+            //alert(chats[x]['sender_id']);
+            if(chats[x]['sender_id']==sender_id)
+            {
+                addClass = 'current-user-chat';
+            }
+            else
+            {
+                addClass = 'distance-user-chat';
+            }
+             html += `<div class="${addClass}" id='`+chats[x]['_id']+`'>
+                                    <p>`+chats[x]['message']+`</p>`
+                                    if(chats[x]['sender_id']==sender_id)
+                                    {
+                                    html +=`<i class="fa fa-trash" aria-hidden="true" data-id='`+chats[x]['_id']+`' data-toggle="modal" data-target="#deleteChatModal"></i>`;
+                                    }
+                                    html +=` </div>`;
+            
+        }
+        console.log("chat content",html);
+        $('#chat-container').append(html);
+        scrollChat();
+        
+    });
+
+    function scrollChat()
+    {
+        $('#chat-container').animate({
+            scrollTop:$('#chat-container').offset().top + $('#chat-container')[0].scrollHeight
+        },0);
+    }
+
+    //code for check typing active or not
+    let input = document.getElementById("message");
+    input.addEventListener("focus", () => {
+         socket.emit('user-typing',receiver_id);
+        console.log("Input field is focused");
+    });
+    input.addEventListener("blur", () => {
+        socket.emit('user-not-typing',receiver_id);
+        console.log("Input field is not focused");
+    });
+    
+    // end code for check typing active or not
+    
+
+    
+
+    socket.on('user-typing-res',function(receiver_id){
+        
+        if(sender_id == receiver_id)
+        {
+            let html = `<div class="distance-user-chat show-hide" >
+                                 <img src="../images/typing-dots.gif" style="width:100px;height:50px;">
+                                </div>`;
+                    $('#chat-container').append(html);
+                    scrollChat();
+        }
+    });
+    socket.on('user-not-typing-res',function(receiver_id){
+        
+        if(sender_id == receiver_id)
+        {
+            $('.show-hide').hide();
+            scrollChat();
+        }
+    });
+    
+    $(document).on('click','.fa-trash',function(){
+        
+        let msg = $(this).parent().text();
+        $('#delete-message').text(msg);
+        $('#delete-message-id').val($(this).attr('data-id'));
+    });
+
+    $('#delete-chat-form').submit(function(event){
+        event.preventDefault();
+        
+        var id = $('#delete-message-id').val();
+        $.ajax({
+            url:'/delete-chat',
+            type:'post',
+            data:{id:id},
+            success:function(res){
+                if(res.success){
+                    $('#'+id).remove();
+                    $('#deleteChatModal').modal('hide');
+
+                    socket.emit('chatDeleted',id);
+                }
+                else{
+                    alert(res.msg);
+                }
+            }
+
+          })
+
+    });
+
+    socket.on('chatMessageDeleted',function(id){
+        $('#'+id).remove();
+    });
+    
+
+    
+</script>
+
+
+<%- include('layouts/footer.ejs') %>

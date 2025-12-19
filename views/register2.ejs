@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoveVerse – Find Your Match</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #ffdde1;
+    }
+
+    /* Main layout */
+    .container {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+      position: relative;
+    }
+
+    /* Left video section */
+    .left {
+      flex: 1.3;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(55%) contrast(1.1);
+    }
+
+    .left::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom right, rgba(255, 0, 128, 0.4), rgba(0, 0, 0, 0.5));
+    }
+
+    .intro-text {
+      position: absolute;
+      bottom: 15%;
+      left: 8%;
+      color: #fff;
+      z-index: 2;
+      max-width: 400px;
+    }
+
+    .intro-text h1 {
+      font-size: 2.8em;
+      color: #ffb6c1;
+      text-shadow: 0 0 10px #ff4b2b;
+    }
+
+    .intro-text p {
+      margin-top: 10px;
+      font-size: 1em;
+      color: #f0f0f0;
+      line-height: 1.6;
+    }
+
+    /* Right form section */
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 50%, #ffe5ec, #ffd6e0, #ffb3c6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Floating hearts */
+    .heart {
+      position: absolute;
+      bottom: -10px;
+      color: rgba(255, 105, 180, 0.7);
+      font-size: 20px;
+      animation: floatHearts 8s linear infinite;
+    }
+
+    @keyframes floatHearts {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-800px) scale(1.8); opacity: 0; }
+    }
+
+    /* Form styling */
+    .form-box {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 40px 35px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(255, 20, 147, 0.4);
+      animation: glow 3s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 15px rgba(255, 20, 147, 0.3); }
+      to { box-shadow: 0 0 35px rgba(255, 20, 147, 0.6); }
+    }
+
+    .form-box h2 {
+      color: #ff4b2b;
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .form-box p {
+      color: #444;
+      font-size: 0.95em;
+      margin-bottom: 20px;
+    }
+
+    .form-box input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 1em;
+      outline: none;
+    }
+
+    .form-box button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1em;
+      background: linear-gradient(135deg, #ff4b2b, #ff416c);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .form-box button:hover {
+      transform: scale(1.07);
+      box-shadow: 0 0 15px #ff4b2b;
+    }
+
+    .form-box a {
+      display: block;
+      margin-top: 15px;
+      color: #ff416c;
+      text-decoration: none;
+      font-size: 0.9em;
+    }
+
+    .form-box a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
+      .left { height: 40vh; flex: none; }
+      .right { height: 60vh; }
+      .intro-text { bottom: 10%; left: 5%; }
+      .intro-text h1 { font-size: 2em; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Left romantic video -->
+    <div class="left">
+      <video autoplay muted loop playsinline>
+        <source src="https://cdn.pixabay.com/vimeo/520135884/couple-71749.mp4?width=1280&hash=4e8e7a9fbe5de2db14c59a02891e5fbc6b0b3144" type="video/mp4">
+      </video>
+      <div class="intro-text">
+        <h1>Find Your Forever Person 💕</h1>
+        <p>Join LoveVerse today — where hearts meet, connect, and create real stories of love.</p>
+      </div>
+    </div>
+
+    <!-- Right signup form -->
+    <div class="right">
+      <!-- Floating hearts -->
+      <span class="heart" style="left:10%; animation-delay:0s;">❤️</span>
+      <span class="heart" style="left:40%; animation-delay:2s;">💖</span>
+      <span class="heart" style="left:70%; animation-delay:4s;">💘</span>
+      <span class="heart" style="left:85%; animation-delay:1.5s;">💞</span>
+
+      <div class="form-box">
+        <h2>Join LoveVerse</h2>
+        <p>Let’s begin your romantic adventure today.</p>
+        <form>
+          <input type="text" placeholder="Full Name" required>
+          <input type="email" placeholder="Email Address" required>
+          <input type="password" placeholder="Create Password" required>
+          <input type="password" placeholder="Confirm Password" required>
+          <button type="submit">Sign Up</button>
+        </form>
+        <a href="#">Already have an account? Log In</a>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

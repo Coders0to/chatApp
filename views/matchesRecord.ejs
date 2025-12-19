@@ -1,0 +1,113 @@
+<%- include('layouts/header-date.ejs') %>
+
+
+<main class="main-content">
+    <div class="app-wrap" role="application" aria-label="Dating UI">
+     <div class="left" aria-hidden="false">
+      <div class="card-viewport">
+       <div class="card-stack" id="cardStack"></div>
+      </div>
+
+      <div style="display:flex;justify-content:center;margin-top:8px;">
+       <div class="controls" role="group" aria-label="Controls" id="controlTools">
+        <button class="circle-btn undo" id="undoBtn" title="Undo ⏪">⟲</button>
+        <button class="circle-btn view" id="viewBtn" title="View Profile 🔍">🔍</button>
+        <button class="circle-btn nope" id="nopeBtn" title="Skip ❌">✖</button>
+        <button class="circle-btn super" id="superBtn" title="Super Like ★">★</button>
+        <button class="circle-btn like" id="likeBtn" title="Like ❤️">❤</button>
+        <button class="circle-btn msg" id="msgBtn" title="Message 💬">💬</button>
+       </div>
+      </div>
+     </div>
+
+     <div class="right" aria-hidden="false">
+      <div class="discover">
+       <h2 id="discover">Discover</h2>
+       <p class="small-muted">Swipe right to like • left to skip • tap photo for details</p>
+      </div>
+
+      <div class="recent-list" id="recentList" aria-live="polite" aria-label="Recent actions"></div>
+
+      <div style="position:absolute;bottom:18px;left:22px;right:22px;display:flex;justify-content:space-between;align-items:center">
+       <div style="display:flex;gap:10px;align-items:center">
+        <button class="circle-btn undo" id="rewindBtn" title="Rewind ⤺">⤺</button>
+       </div>
+       <div class="small-muted">Tip: Use ← → keys for quick testing</div>
+      </div>
+     </div>
+    </div>
+</main>
+<div class="chat-panel" id="chatPanel" aria-hidden="true" role="dialog" aria-label="Chat panel">
+ <div class="chat-header">
+  <img id="chatAvatar" src="" alt="avatar">
+  <div>
+   <div id="chatName" style="font-weight:600">—</div>
+   <div class="small-muted" id="active-status">Active recently</div>
+  </div>
+  <div style="margin-left:auto"><button id="closeChat" class="circle-btn" style="width:40px;height:40px;font-size:18px">✕</button></div>
+ </div>
+
+ <div class="chat-body" id="chatBody" tabindex="0"></div>
+ <div id="chat-container"></div>
+ <div class="chat-input">
+  <form id="chat-form" class="mb-3">
+    <input id="chatInput" placeholder="Type a message..." aria-label="Type message" />
+    <button type="submit" class="send-btn" id="sendBtn" aria-label="Send">➤</button>
+  </form>
+ </div>
+</div>
+
+<button class="help-fab" id="helpFab" aria-label="Help">?</button>
+
+<div class="help-modal" id="helpModal" role="dialog" aria-hidden="true">
+ <div class="help-card" role="document">
+  <h3>💖 How It Works (Hinglish)</h3>
+  <ul class="help-list">
+   <li>❤️ <strong>Like</strong> - Agar pasand aaye to right swipe ya ❤ dabao.</li>
+   <li>❌ <strong>Skip</strong> - Pasand nahi to left swipe ya ✖️ dabao.</li>
+   <li>💫 <strong>Super Like</strong> - Bahut pasand ho to ★ dabao.</li>
+   <li>⏪ <strong>Undo</strong> - Galti se swipe ho gaya? Wapas lao.</li>
+   <li>⤺ <strong>Rewind</strong> - Sare recent actions reset karo.</li>
+   <li>🔍 <strong>View Profile</strong> - Profile ka detail dekhne ke liye.</li>
+   <li>💬 <strong>Send Message</strong> - Match ke baad chat start karne ke liye.</li>
+  </ul>
+  <div style="text-align:right;margin-top:12px"><button id="closeHelp" class="circle-btn" style="width:44px;height:40px;background:linear-gradient(135deg,var(--accent2),var(--accent1));color:white">OK</button></div>
+ </div>
+</div>
+
+ <template id="cardTpl">
+ <div class="card" role="article">
+  <input type="hidden" class="userUId">
+  <div class="photo">
+    <img class="profile-img" alt="Profile Photo" src=""> <div class="badge">Online</div>
+    <div class="badge">Online</div></div>
+  <div class="info">
+   <div>
+    <h3><span class="cname">Name</span>, <span class="cage">25</span></h3>
+    <div class="meta"><span class="cdistance">0.7 km</span></div>
+    <div class="bio">Interests • hobbies • short bio</div>
+   </div>
+  </div>
+  <div class="stamp like">LIKE</div>
+  <div class="stamp nope">NOPE</div>
+ </div>
+</template>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+  var sender_id;
+    var emp_id; //receiver_id
+    var receiver_id;
+    var cust_rec_id;
+    let user_type;
+    var socket = io('/user-namespace',{
+        auth: {token:'<%= user._id %>'}
+    });
+    user_type='<%= user.user_type %>';
+    sender_id = '<%= user._id %>';     
+</script>
+
+<script src="/js/matches.js"></script>
+<%- include('layouts/footer-date.ejs') %>

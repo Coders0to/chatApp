@@ -1,0 +1,452 @@
+<%- include('layouts/header.ejs') %>
+<style>
+    .user-list-container {
+        display: flex;
+        overflow-x: auto;
+        gap: 16px;
+        padding: 10px;
+        white-space: nowrap;
+    }
+
+    .emp-list {
+        min-width: 200px;
+        max-width: 220px;
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: #fff;
+        transition: transform 0.3s ease;
+    }
+
+    .emp-list:hover {
+        transform: translateY(-4px);
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+
+    .like-icon-2 {
+        position: fixed;
+        top: 8px;
+        right: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 1.2rem;
+        color: #e74c3c; 
+        cursor: pointer;
+        user-select: none;
+        background: #fff;
+        padding: 4px 8px;
+        border-radius: 20px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+
+    .like-icon-2:hover {
+        transform: scale(1.1);
+    }
+    
+    .like-count {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .emp-list img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid #ccc;
+        margin-bottom: 10px;
+    }
+
+    .emp-name {
+        font-weight: bold;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .online-status, .offline-status {
+        font-size: 0.75rem;
+        margin-top: 6px;
+        padding: 2px 8px;
+        border-radius: 12px;
+        color: white;
+    }
+
+    .online-status {
+        background-color: #28a745;
+        width: 173px;
+        height: 30px;
+        text-align: center;
+
+        display: flex;
+        align-items: center;    /* Vertically center */
+        justify-content: center; /* Horizontally center (optional) */
+
+        border-radius: 12px;
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    .offline-status {
+        /* background-color: #6c757d; */
+        background-color: #6c757d;
+        width: 173px;
+        height: 30px;
+        text-align: center;
+
+        display: flex;
+        align-items: center;    /* Vertically center */
+        justify-content: center; /* Horizontally center (optional) */
+
+        border-radius: 12px;
+        color: white;
+        font-size: 0.9rem;
+    }
+    
+</style>
+<h2 class="mb-4" >Hii, <%= user.name %> </h2>
+
+<hr>
+
+<div class="row">
+    
+    <div class="col-12">
+        <h3 id="emp-list-heading"></h3>
+        <!-- <ul class="list-group">
+             <%
+                if(users.length > 0)
+                {
+                    for(let i = 0; i<users.length; i++)
+                    {
+                        %> 
+                        <li class="list-group-item list-group-item-dark cursor-pointer emp-list" data-id="<%= users[i]['_id'] %>" data-name="<%= users[i]['name'] %>" data-img="<%= users[i]['image'] %>">
+                            <img src="<%= 'http://127.0.0.1:3000/'+users[i]['image'] %>" alt="" style="width:40px;height:40px;border-radius:50%;" >
+                            <%= users[i]['name'] %>
+
+                            <% 
+                                if(users[i]['is_online']==1)
+                                {
+                                    %>
+                                        <sup class="online-status" id="<%= users[i]['_id'] %>-status">Online</sup>
+                                    <%
+                                }
+                                else
+                                {
+                                    %>
+                                    <sup class="offline-status" id='<%= users[i]['_id'] %>-status'>Offline</sup>
+                                    <%
+
+                                }
+                            %>
+                        </li>
+                        <%
+                    }
+                }
+            %>
+        </ul> -->
+        <div class="user-list-container">
+            <% if(users.length > 0) { %>
+                <% for(let i = 0; i < users.length; i++) { %>
+                    <div class="emp-list" 
+                        data-id="<%= users[i]['_id'] %>" 
+                        data-name="<%= users[i]['name'] %>" 
+                        data-img="<%= users[i]['image'] %>">
+
+                        <div class="like-icon-2" data-liked="false">
+                            <i class="far fa-heart "></i>
+                              <span class="like-count ">12</span>
+                        </div>
+                        <!-- <img src="http://127.0.0.1:3000/images/icon/female.png" alt="<%= users[i]['name'] %>"> -->
+                        <img src="http://127.0.0.1:3000/<%= users[i]['image'] %>" alt="<%= users[i]['name'] %>">
+
+                        <div class="emp-name"><%= users[i]['name'] %></div>
+                        
+                        <% if(users[i]['is_online'] == 1) { %>
+                            <span class="online-status" id="<%= users[i]['_id'] %>-status">Online</span>
+                        <% } else { %>
+                            <span class="offline-status" id="<%= users[i]['_id'] %>-status">Offline</span>
+                        <% } %>
+                    </div>
+                <% } %>
+            <% } else { %>
+                <div>No users found</div>
+            <% } %>
+        </div>
+
+    </div>
+    <div class="col-sm-12 col-md-4"> </div>
+    <div class="col-sm-12 col-md-5 chat-boot-section chat-section mt-3">
+        <!-- <h3 class="start-head">Click to Start the Chat</h3> -->
+        <div class="chatboot-header" style="text-align: center;">
+            <div class="row">
+                <div class="col-auto chat-section-profile">
+                </div>
+                
+                <div class="col-auto">
+                    <span class="h3 ms-auto chat-heading" style="float:right;">Chatbot</span>
+                </div>
+                
+            </div>
+            
+        </div>
+        <div class="chat-section1">
+            <div id="chat-container">
+               
+            </div>
+            <form id="chat-form" class="mb-3">
+                <input type="text" placeholder="Enter Message" class="form-control1 border" id="message"  required >
+            </form>
+        </div>
+    </div>
+</div>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="deleteChatModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Delete Chat</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form id="delete-chat-form">
+            <div class="modal-body">
+                <input type="hidden" name="id" id="delete-message-id">
+                <h5 class="text-center">Are you sure to delete below chat ?</h5>
+                <p class="text-center"><b id="delete-message"></b></p>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+    var sender_id;
+    var emp_id; //receiver_id
+    var receiver_id;
+    var cust_rec_id;
+    let user_type;
+    var socket = io('/user-namespace',{
+        auth: {token:'<%= user._id %>'}
+    });
+    
+    user_type='<%= user.user_type %>';
+    if(user_type=='2')
+    {
+        $('#emp-list-heading').html(`<h3>User List</h3>`);
+    }
+    else if(user_type=='3')
+    {
+        $('#emp-list-heading').html(`<h3>Customers List</h3>`);
+    }
+    
+    $(document).ready(function()
+    {
+        $('.emp-list').click(function(){
+            var userId = $(this).attr('data-id');
+            var userName = $(this).attr('data-name');
+            var userImg = $(this).attr('data-img');
+            
+            user_type='<%= user.user_type %>';
+            //update code 
+            receiver_id = userId;
+            cust_rec_id = receiver_id;
+            sender_id  = '<%= user._id %>';
+            //$('.start-chat').hide();
+            $('.chat-section').show();
+            socket.emit('existsChat',{sender_id:sender_id,receiver_id:receiver_id,userName:userName,userImg:userImg}); //here receiver_id bo h jis user pr logged user click kr rha h  
+            //end updated code
+        });
+    });
+    //update user online status
+    socket.on('getOnlineUser',function(data){
+        $('#'+data.user_id+'-status').text('Online');
+        $('#'+data.user_id+'-status').addClass('online-status');
+        $('#'+data.user_id+'-status').removeClass('offline-status');
+    });
+    //update user offline status
+    socket.on('getOflineUser',function(data){
+        $('#'+data.user_id+'-status').text('Offline');
+        $('#'+data.user_id+'-status').addClass('offline-status');
+        $('#'+data.user_id+'-status').removeClass('online-status');
+    });
+    //chat save of user
+    $('#chat-form').submit(function(event){
+        event.preventDefault();
+        var message = $('#message').val();
+        receiver_id= cust_rec_id
+        $.ajax({
+            url:'/save-chat',
+            type:'post',
+            data:{sender_id:sender_id,receiver_id:receiver_id,message:message},
+            success:function(response){
+                if(response.success)
+                {
+                    $('#message').val('');
+                    var chat = response.data.message;
+                    console.log("chat response",response);
+                    let html = `<div class="current-user-chat" id='`+response.data._id+`'>
+                                    <p>`+chat+`
+                                        <i class="fa fa-trash" aria-hidden="true" data-id='`+response.data._id+`' data-toggle="modal" data-target="#deleteChatModal"></i>
+                                        </p>
+                                </div>`;
+                    $('#chat-container').append(html);
+                    socket.emit('newChat',response.data);
+                    socket.emit('user-not-typing',receiver_id);
+                    scrollChat();
+                   
+                }
+                else
+                {
+                    alert(response.data.msg);
+                }
+            }
+        });
+    });
+
+    socket.on('loadNewChat',function(data){
+        
+        if(sender_id == data.receiver_id && receiver_id == data.sender_id)
+        {
+            let html = `<div class="distance-user-chat" id='`+data._id+`'>
+                                    <p>`+data.message+`</p>
+                                </div>`;
+                    $('#chat-container').append(html);
+                    scrollChat();
+        }
+        
+    });
+
+    //display old chat 
+    socket.on('loaChats',function(loadchat,userName,userImg){
+        
+        $('#chat-container').html(' ');
+        //alert(userName.userName);
+        var chats = loadchat.chats;
+       
+        console.log("chat content chats",userName);
+        $('.chat-heading').text(`${userName.userName}`);
+        $('.chat-section-profile').html(`<img src="http://127.0.0.1:3000/${userImg.userImg}" class="mt-2 chat-profile-icon" alt="" style="width:40px;height:40px;margin:10px;float:left;">`);
+        let html = '';
+        for(let x=0;x<chats.length;x++)
+        {
+            let addClass = '';
+            //alert(chats[x]['sender_id']);
+            if(chats[x]['sender_id']==sender_id)
+            {
+                addClass = 'current-user-chat';
+            }
+            else
+            {
+                addClass = 'distance-user-chat';
+            }
+             html += `<div class="${addClass}" id='`+chats[x]['_id']+`'>
+                                    <p>`+chats[x]['message']+`</p>`
+                                    if(chats[x]['sender_id']==sender_id)
+                                    {
+                                    html +=`<i class="fa fa-trash" aria-hidden="true" data-id='`+chats[x]['_id']+`' data-toggle="modal" data-target="#deleteChatModal"></i>`;
+                                    }
+                                    html +=` </div>`;
+            
+        }
+        console.log("chat content",html);
+        $('#chat-container').append(html);
+        scrollChat();
+        
+    });
+
+    function scrollChat()
+    {
+        $('#chat-container').animate({
+            scrollTop:$('#chat-container').offset().top + $('#chat-container')[0].scrollHeight
+        },0);
+    }
+
+    //code for check typing active or not
+    let input = document.getElementById("message");
+    input.addEventListener("focus", () => {
+         socket.emit('user-typing',receiver_id);
+        console.log("Input field is focused");
+    });
+    input.addEventListener("blur", () => {
+        socket.emit('user-not-typing',receiver_id);
+        console.log("Input field is not focused");
+    });
+    
+    // end code for check typing active or not
+    
+
+    
+
+    socket.on('user-typing-res',function(receiver_id){
+        
+        if(sender_id == receiver_id)
+        {
+            let html = `<div class="distance-user-chat show-hide" >
+                                 <img src="../images/typing-dots.gif" style="width:100px;height:50px;">
+                                </div>`;
+                    $('#chat-container').append(html);
+                    scrollChat();
+        }
+    });
+    socket.on('user-not-typing-res',function(receiver_id){
+        
+        if(sender_id == receiver_id)
+        {
+            $('.show-hide').hide();
+            scrollChat();
+        }
+    });
+    
+    $(document).on('click','.fa-trash',function(){
+        
+        let msg = $(this).parent().text();
+        $('#delete-message').text(msg);
+        $('#delete-message-id').val($(this).attr('data-id'));
+    });
+
+    $('#delete-chat-form').submit(function(event){
+        event.preventDefault();
+        
+        var id = $('#delete-message-id').val();
+        $.ajax({
+            url:'/delete-chat',
+            type:'post',
+            data:{id:id},
+            success:function(res){
+                if(res.success){
+                    $('#'+id).remove();
+                    $('#deleteChatModal').modal('hide');
+
+                    socket.emit('chatDeleted',id);
+                }
+                else{
+                    alert(res.msg);
+                }
+            }
+
+          })
+
+    });
+
+    socket.on('chatMessageDeleted',function(id){
+        $('#'+id).remove();
+    });
+    
+
+    
+</script>
+
+
+<%- include('layouts/footer.ejs') %>

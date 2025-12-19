@@ -1,0 +1,35 @@
+<% if(users.length > 0) { %>
+    <% for(let i = 0; i < users.length; i++) { %>
+        <div class="emp-list"
+            data-id="<%= users[i]['_id'] %>"
+            data-name="<%= users[i]['name'] %>"
+            data-img="<%= users[i]['image'] %>">
+
+            <div class="like-icon" data-liked="false">
+                <i class="<%= users[i]['checkLiked'] ? 'fas fa-heart text-danger' : 'far fa-heart' %>  addLike"
+                   data-id="<%= users[i]['_id'] %>"></i>
+                <span class="like-count"> <%= users[i]['likeCount'] %> </span>
+            </div>
+
+            <img src="http://127.0.0.1:3000/<%= users[i]['image'] %>" alt="<%= users[i]['name'] %>">
+
+            <div class="emp-name"><%= users[i]['name'] %> rola</div>
+
+            <% if(users[i]['is_online'] == 1) { %>
+                <span class="online-status chatStart"
+                      id="<%= users[i]['_id'] %>-status"
+                      data-id="<%= users[i]['_id'] %>"
+                      data-name="<%= users[i]['name'] %>"
+                      data-img="<%= users[i]['image'] %>">Online</span>
+            <% } else { %>
+                <span class="offline-status chatStart"
+                      id="<%= users[i]['_id'] %>-status"
+                      data-id="<%= users[i]['_id'] %>"
+                      data-name="<%= users[i]['name'] %>"
+                      data-img="<%= users[i]['image'] %>">Offline</span>
+            <% } %>
+        </div>
+    <% } %>
+<% } else { %>
+    <div>No users found</div>
+<% } %>

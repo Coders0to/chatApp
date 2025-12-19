@@ -1,0 +1,158 @@
+<%- include('layouts/header.ejs') %>
+<style>
+    .notifications-panel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  font-family: 'Poppins', sans-serif;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.title {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.title h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #777;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-action {
+  background: #227ebb;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-action:hover {
+  background: #1a6493;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notification {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: #f7f9fc;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.notification.unread {
+  border-left: 4px solid #227ebb;
+}
+
+.notification:hover {
+  transform: translateY(-3px);
+}
+
+.avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.content {
+  flex: 1;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.heading {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.time {
+  font-size: 12px;
+  color: #777;
+}
+
+.message {
+  font-size: 13px;
+  color: #555;
+}
+
+</style>
+<div class="notifications-panel">
+  <div class="panel-header">
+    <div class="title">
+      <i class="fas fa-bell"></i>
+      <div>
+        <h1>Notifications</h1>
+        <p class="subtitle">Latest updates and alerts</p>
+      </div>
+    </div>
+    <div class="actions">
+      <span class="badge notification-count"></span>
+      <button class="btn-action" id="markAll">Mark all read</button>
+      <button class="btn-action" id="clearAll">Clear</button>
+    </div>
+  </div>
+
+  <div class="list" id="notification-list">
+  </div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASFFCKBSuGs8MnNkDKC_zRdkFffK6YTdg&libraries=places"></script>
+
+<input id="autocomplete" type="text" placeholder="Enter an address" />
+
+<script>
+  function initAutocomplete() {
+    const input = document.getElementById('autocomplete');
+    new google.maps.places.Autocomplete(input);
+  }
+
+  google.maps.event.addDomListener(window, 'load', initAutocomplete);
+</script>
+
+
+<%- include('layouts/footer.ejs') %>
+<script src="js/notification.js"></script>
+<script>
+document.getElementById('markAll').addEventListener('click', () => {
+  document.querySelectorAll('.notification.unread').forEach(el => el.classList.remove('unread'));
+  document.getElementById('notification-count').textContent = 0;
+});
+
+document.getElementById('clearAll').addEventListener('click', () => {
+  document.getElementById('notification-list').innerHTML = "<p style='text-align:center;color:#777;'>No notifications 🎉</p>";
+  document.getElementById('notification-count').textContent = 0;
+});
+</script>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join LoveVerse 💖</title>
+
+  <!-- Bootstrap & Toastr -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+
+  <style>
+    /* code for address suggesstions */
+    .location-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+#locationInput {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+#locationSuggestions {
+    position: absolute;
+    top: 100%;        /* input ke bilkul neeche */
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    max-height: 220px;
+    overflow-y: auto;
+    display: none;
+    z-index: 99999;   /* sabse upar */
+}
+
+.suggest-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.suggest-item:hover {
+    background: #f1f1f1;
+}
+
+    /* end code for this address suggesstions */
+    /* Fullscreen Background Video */
+    .video-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -3;
+    }
+
+    /* Gradient Overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(255,182,193,0.7), rgba(255,105,180,0.6));
+      z-index: -2;
+      backdrop-filter: blur(3px);
+    }
+
+    /* Floating Hearts */
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle at 30% 30%, #ff4b81, #ff0066);
+      transform: rotate(45deg);
+      animation: floatUp 10s linear infinite;
+      opacity: 0.8;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: inherit;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) rotate(45deg) scale(0.8);
+        opacity: 0;
+      }
+      30% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh) rotate(45deg) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    /* Form Layout */
+    body {
+      font-family: "Poppins", sans-serif;
+      color: #444;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .register-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 0;
+    }
+
+    .left-content {
+      flex: 1;
+      text-align: center;
+      color: white;
+      padding: 4rem;
+    }
+
+    .left-content h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      text-shadow: 0 0 20px rgba(255,255,255,0.4);
+    }
+
+    .left-content p {
+      font-size: 1.1rem;
+      margin-top: 15px;
+      color: #f9f9f9;
+    }
+
+    .form-box {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px 50px;
+      border-radius: 20px;
+      width: 450px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      animation: fadeIn 1s ease;
+      margin: 20px;
+    }
+
+    .form-box h2 {
+      color: #ff4b81;
+      font-weight: 600;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    input.error, select.error {
+      border: 1px solid #dc3545;
+    }
+
+    label {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .btn-pink {
+      background: linear-gradient(90deg, #ff6f91, #ff4b81);
+      color: white;
+      font-weight: 600;
+      border: none;
+      transition: 0.3s;
+    }
+
+    .btn-pink:hover {
+      background: linear-gradient(90deg, #ff4b81, #ff6f91);
+      box-shadow: 0 0 15px rgba(255,105,180,0.6);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media(max-width: 900px) {
+      .register-container {
+        flex-direction: column;
+        padding: 40px 10px;
+      }
+      .left-content {
+        padding: 20px;
+      }
+      .form-box {
+        width: 100%;
+        max-width: 400px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Romantic Background Video -->
+  <video autoplay muted loop class="video-bg">
+    <source src="https://cdn.pixabay.com/video/2023/09/06/181818-861303244_large.mp4" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+  <div class="hearts" id="hearts"></div>
+
+  <div class="register-container">
+    <div class="left-content">
+      <h1>Find Your Forever Person 💞</h1>
+      <p>Join LoveVerse today — where hearts meet, connect, and create real stories of love.</p>
+    </div>
+
+    <div class="form-box">
+      <h2 id="form-title">Join LoveVerse</h2>
+      <form id="user-register" autocomplete="off" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="name">Name <span style="color:red">*</span></label>
+          <input type="text" name="name" id="name" placeholder="Full Name" class="form-control" required>
+        </div>
+
+        
+
+        <div class="mb-3">
+          <label for="email">Email <span style="color:red">*</span></label>
+          <input type="email" name="email" id="email" placeholder="Email" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="password">Password <span style="color:red">*</span></label>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="gender">Gender <span style="color:red">*</span></label>
+          <select class="form-control" name="gender" id="gender" required>
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="location">Location <span style="color:red">*</span></label>
+          <!-- id="location" -->
+          <!-- <input id="search" name="location" class="form-control" placeholder="Your Current Location" required type="text">
+          <div id="suggestions"></div> -->
+          <div class="location-wrapper">
+              <input type="text" id="locationInput" placeholder="Location">
+              <div id="locationSuggestions"></div>
+          </div>
+
+          <input type="hidden" id="latitude" name="latitude">
+          <input type="hidden" id="longitude" name="longitude">
+        </div>
+
+        <div class="text-center">
+          <input type="submit" value="Register" id="submit-btn" class="btn btn-pink w-100 py-2">
+        </div>
+        <div class="text-center mt-3">
+          <p>Already have an account? 
+            <a  id="show-login" class="text-pink" style="color:#e91e63; text-decoration:none;cursor:pointer;">Login here</a>
+          </p>
+        </div>
+      </form>
+      <!-- code for login  -->
+       <div class="container" id="user-login" style="display:none;">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-offset-4" style="margin:10% auto;text-align:center;">
+            <form id="loginForm" method="post" action="/">
+              <input type="email" name="email" placeholder="email" class="form-control mb-3" required>
+              <input type="password" name="password" placeholder="password" class="form-control mb-3" required>
+              <div class="text-center">
+                <input type="submit" value="Login User"  class="btn btn-pink w-100 py-2">
+              </div>
+              <div class="text-center mt-3">
+                <p>Don’t have an account?
+                  <a id="show-register" style="color:#e91e63; text-decoration:none;cursor:pointer;">Register here</a>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- end code for login -->
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv0hnS3pfteHN1XbAXFrrfs-PV3aX1C8Y&callback=initAutocomplete&libraries=places&v=weekly" async defer></script>
+  <script src="js/authentic.js"></script>
+
+</body>
+</html>

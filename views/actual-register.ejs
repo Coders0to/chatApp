@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join LoveVerse 💖</title>
+
+  <!-- Bootstrap & Toastr -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+
+  <style>
+    /* Fullscreen background video */
+    .video-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    /* Soft overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(255,182,193,0.7), rgba(255,105,180,0.6));
+      z-index: -1;
+      backdrop-filter: blur(3px);
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      color: #444;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .register-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 0;
+    }
+
+    .left-content {
+      flex: 1;
+      text-align: center;
+      color: white;
+      padding: 4rem;
+    }
+
+    .left-content h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      text-shadow: 0 0 20px rgba(255,255,255,0.4);
+    }
+
+    .left-content p {
+      font-size: 1.1rem;
+      margin-top: 15px;
+      color: #f9f9f9;
+    }
+
+    .form-box {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px 50px;
+      border-radius: 20px;
+      width: 450px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      animation: fadeIn 1s ease;
+    }
+
+    .form-box h2 {
+      color: #ff4b81;
+      font-weight: 600;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    input.error, select.error {
+      border: 1px solid #dc3545;
+    }
+
+    label {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .btn-pink {
+      background: linear-gradient(90deg, #ff6f91, #ff4b81);
+      color: white;
+      font-weight: 600;
+      border: none;
+      transition: 0.3s;
+    }
+
+    .btn-pink:hover {
+      background: linear-gradient(90deg, #ff4b81, #ff6f91);
+      box-shadow: 0 0 15px rgba(255,105,180,0.6);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media(max-width: 900px) {
+      .register-container {
+        flex-direction: column;
+        padding: 40px 10px;
+      }
+      .left-content {
+        padding: 20px;
+      }
+      .form-box {
+        width: 100%;
+        max-width: 400px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Background Video -->
+  <video autoplay muted loop class="video-bg">
+    <source src="https://cdn.pixabay.com/video/2022/09/20/131754-758476963_large.mp4" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+
+  <div class="register-container">
+    <div class="left-content">
+      <h1>Find Your Forever Person 💞</h1>
+      <p>Join LoveVerse today — where hearts meet, connect, and create real stories of love.</p>
+    </div>
+
+    <div class="form-box">
+      <h2>Join LoveVerse</h2>
+      <form id="user-register" autocomplete="off" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="name">Name <span style="color:red">*</span></label>
+          <input type="text" name="name" id="name" placeholder="Full Name" class="form-control" required>
+        </div>
+
+
+        <div class="mb-3">
+          <label for="email">Email <span style="color:red">*</span></label>
+          <input type="email" name="email" id="email" placeholder="Email" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="password">Password <span style="color:red">*</span></label>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="gender">Gender <span style="color:red">*</span></label>
+          <select class="form-control" name="gender" id="gender" required>
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="location">Location <span style="color:red">*</span></label>
+          <input id="location" name="location" class="form-control" placeholder="Your Current Location" required type="text">
+          <input type="hidden" id="latitude" name="latitude">
+          <input type="hidden" id="longitude" name="longitude">
+        </div>
+
+        <div class="text-center">
+          <input type="submit" value="Register" id="submit-btn" class="btn btn-pink w-100 py-2">
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv0hnS3pfteHN1XbAXFrrfs-PV3aX1C8Y&callback=initAutocomplete&libraries=places&v=weekly" async defer></script>
+
+  <script>
+    // Initialize Google Places Autocomplete
+    function initAutocomplete() {
+      const input = document.getElementById('location');
+      const autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.addListener('place_changed', function () {
+        const place = autocomplete.getPlace();
+        document.getElementById('latitude').value = place.geometry.location.lat();
+        document.getElementById('longitude').value = place.geometry.location.lng();
+      });
+    }
+
+    // Form submit validation + AJAX (your original logic)
+    $(document).on('click', '#submit-btn', function(e) {
+      e.preventDefault();
+      const form = $('#user-register');
+      let isValid = true;
+
+      form.find('input[required], select[required]').each(function() {
+        if(!$(this).val()) {
+          $(this).addClass('error');
+          isValid = false;
+        } else {
+          $(this).removeClass('error');
+        }
+      });
+
+      if(!isValid) {
+        toastr.error("Please fill all required fields");
+        return false;
+      }
+
+      const formdata = new FormData(form[0]);
+      $('#submit-btn').prop('disabled', true);
+
+      $.ajax({
+        type: 'POST',
+        url: 'register',
+        data: formdata,
+        contentType: false,
+        processData: false
+      })
+      .done(function(response) {
+        if(response.success === true && response.data.statusCode === 200){
+          toastr.success(response.message);
+          setTimeout(() => { window.location.href = response.data.redirect; }, 1000);
+        } else if(response.errors) {
+          response.errors.forEach(e => toastr.error(e));
+        }
+      })
+      .fail(function(xhr) {
+        toastr.error("Something went wrong!");
+      })
+      .always(function() {
+        $('#submit-btn').prop('disabled', false);
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<title>Register Panel</title>
+    <style>
+        input.error, select.error {
+            border: 1px solid #dc3545;
+        }
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv0hnS3pfteHN1XbAXFrrfs-PV3aX1C8Y&callback=initAutocomplete&libraries=places&v=weekly" type="text/javascript"></script>
+</head>
+<body>
+
+    <div class="container" style="margin:10% auto;max-width:60%;border:2px solid #ccc;padding:50px;">
+        <h1 class="text-center mb-4">Create Your Account</h1>
+        
+        <form id="user-register" autocomplete="off" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <label for="name" title="Name">Name <span style="color:red">*</span></label>
+                    <input type="text" name="name" id="name" autocomplete="new-name" placeholder="Full Name" class="form-control" required title="Name">
+                </div>
+                <div class="col-sm-12 col-md-6">
+                    <label for="image" title="Image">Profile Image <span style="color:red">*</span></label>
+                    <input type="file" name="image" required id="image" class="form-control" title="Image">
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-sm-12 col-md-4">
+                    <label for="email" title="Email">Email <span style="color:red">*</span></label>
+                    <input type="email" name="email" id="email" autocomplete="new-email" placeholder="Email" class="form-control" required title="Email">
+                </div>
+                <div class="col-sm-12 col-md-4">
+                    <label for="password" title="Password">Password <span style="color:red">*</span></label>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Passwprd" required title="Password">
+                </div>
+                <div class="col-sm-12 col-md-4">
+                    <label for="gender" title="Gender">Gender <span style="color:red">*</span></label>
+                    <select class="form-control" name="gender" id="gender" onchange="groupfunc()" title="Gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+
+                <div class="col-sm-12 col-md-12 mt-3">
+                    <label for="location" title="Location">Your Current Location <span style="color:red">*</span></label>
+                    <input id="location" name="location" required class="form-control" placeholder="Your Current Location" size="50" autocomplete="off" runat="server" type="text" value="" title="Location">
+                </div>
+                <div class="col-sm-12 col-md-3 mt-3" id="cordDiv">
+                    <div id="locationField" style="position:relative; width:100%;">
+                        <input hidden id="latitude" name="latitude" value="">
+                        <input hidden id="longitude" name="longitude" value="">    
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-12 mt-3">
+                    <input type="submit" value="Register" id="submit-btn" class="form-control btn btn-success" title="Register">
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $('#group_code').hide();
+        function groupfunc()
+        {
+            const group_name = $('#group_name').val();
+            if(group_name==1)
+            {
+                $('#group_code').show();
+                $('#group_code input').attr('required', true);
+            } else if(group_name==2)
+            {
+                $('#group_code').hide();
+                $('#group_code input').attr('required', false);
+            }
+        }
+    </script>
+    <script>
+        // navigator.geolocation.getCurrentPosition(
+        // function (position) {
+        //     const latitude = position.coords.latitude;
+        //     const longitude = position.coords.longitude;
+        //     console.log('latitude',latitude, 'longitude',longitude);
+        //     $('#cordDiv #latitude').val(latitude);
+        //     $('#cordDiv #longitude').val(longitude);
+        // },
+        // function (error) {
+        //     console.error('Error getting location:', error);
+        // }
+        // );
+        </script>
+        <script type="text/javascript">
+            function initialize() {
+            var input = document.getElementById('location');
+                var autocomplete = new google.maps.places.Autocomplete(input);
+                google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                    var place = autocomplete.getPlace();
+                    var lat = place.geometry.location.lat();
+                    var long = place.geometry.location.lng()
+                    document.getElementById('latitude').value = place.geometry.location.lat();
+                    document.getElementById('longitude').value = place.geometry.location.lng();
+                });
+            }
+            google.maps.event.addDomListener(window, 'load', initialize); 
+         </script>
+        <script>
+            $(document).on('click', '#submit-btn', function(e) {
+                e.preventDefault();
+                const form = $('#user-register');
+                let isValid = true;
+
+                // Loop through all required fields
+                form.find('input[required], select[required]').each(function() {
+                    if(!$(this).val()) {
+                        $(this).addClass('error');  
+                        isValid = false;
+                    } else {
+                        $(this).removeClass('error'); // remove red border if filled
+                    }
+                });
+
+                if(!isValid) {
+                    toastr.error("Please fill all required fields");
+                    return false; // stop form submission
+                }
+
+                const formdata = new FormData(form[0]);
+                $('#submit-btn').prop('disabled', true);
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'register',
+                    data: formdata,
+                    contentType: false,
+                    processData: false
+                })
+                .done(function(response) {
+                    if(response.success === true && response.data.statusCode === 200){
+                        toastr.success(response.message);
+                        setTimeout(() => {
+                            window.location.href = response.data.redirect;
+                        }, 1000);
+                    } else if(response.errors) {
+                        response.errors.forEach(e => toastr.error(e));
+                    }
+                })
+                .fail(function(xhr) {
+                    let errMsg = "Something Went Wrong";
+                    if(xhr.responseJSON && xhr.responseJSON.errors){
+                        const requiredFields = xhr.responseJSON.errors.filter(e => e.toLowerCase().includes("is required"));
+                        if(requiredFields.length === xhr.responseJSON.errors.length){
+                            errMsg = "Please fill all required fields";
+                        } else {
+                            xhr.responseJSON.errors.forEach(e => toastr.error(e));
+                            return;
+                        }
+                    } else if(xhr.responseJSON && xhr.responseJSON.msg){
+                        errMsg = xhr.responseJSON.msg;
+                    }
+                    toastr.error(errMsg);
+                })
+                .always(function() {
+                    $('#submit-btn').prop('disabled', false);
+                });
+            });
+        $('#user-register input[required], #user-register select[required]').on('input change', function() {
+            if($(this).val()) {
+                $(this).removeClass('error');
+            }
+        });
+
+        </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+ -->
