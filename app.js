@@ -1,7 +1,15 @@
 require('dotenv').config();
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://127.0.0.1:27017/quakApp');
+// mongoose.connect('mongodb://127.0.0.1:27017/quakApp');
+if (process.env.MONGO_URI) {
+  mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("MongoDB connected"))
+    .catch(err => console.error("Mongo error:", err));
+} else {
+  console.log("MONGO_URI not found, skipping DB connection");
+}
+
 const app = require('express')();
 const http = require('http').Server(app);
 
@@ -153,6 +161,6 @@ app.get("/auth", (req, res) => {
 //end code for docusign
 const PORT = process.env.PORT || 3000;
 //console.log('port from env',PORT);
-http.listen(3000, function(){
+http.listen(PORT, function(){
     console.log('server is running on 3000 port...')
 });
