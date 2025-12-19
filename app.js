@@ -1,7 +1,9 @@
-require('dotenv').config();
+// require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 var mongoose = require('mongoose');
 
-// mongoose.connect('mongodb://127.0.0.1:27017/quakApp');
+//mongoose.connect('mongodb://127.0.0.1:27017/quakApp');
 if (process.env.MONGO_URI) {
   mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected"))
