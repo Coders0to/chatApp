@@ -15,7 +15,7 @@ const docusign = require("docusign-esign");
 user_route.set('view engine','ejs');
 user_route.set('views','./views');
 
-user_route.use(express.static('public'));
+//user_route.use(express.static('public'));
 
 const path = require('path');
 const multer = require('multer');
