@@ -13,6 +13,8 @@ if (process.env.MONGO_URI) {
 const app = require('express')();
 const http = require('http').Server(app);
 
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
 const userRoute = require('./routes/userRoute');
 const User = require('./models/userModel');
 const Chat = require('./models/chatModel');
