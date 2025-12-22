@@ -1,6 +1,9 @@
 require('dotenv').config();
 var mongoose = require('mongoose');
 
+const express = require('express');
+const path = require('path');
+const app = express();
 //mongoose.connect('mongodb://127.0.0.1:27017/quakApp');
 if (process.env.MONGO_URI) {
   mongoose.connect(process.env.MONGO_URI)
@@ -10,11 +13,12 @@ if (process.env.MONGO_URI) {
   console.log("MONGO_URI not found, skipping DB connection");
 }
 
-const app = require('express')();
+//const app = require('express')();
 const http = require('http').Server(app);
 
 
-app.use('/public', express.static(path.join(__dirname, 'public')));
+// app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 const userRoute = require('./routes/userRoute');
 const User = require('./models/userModel');
