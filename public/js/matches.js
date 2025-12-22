@@ -38,6 +38,9 @@ $(document).on('click', '#msgBtn', function () {
     //end code for load chat
 });
 
+var domainUrl = window.location.protocol + "//" + window.location.host;
+console.log(domainUrl);
+
 //display old chat 
     socket.on('loaChats',function(loadchat,userName,userImg)
     {
@@ -45,7 +48,7 @@ $(document).on('click', '#msgBtn', function () {
         var chats = loadchat.chats;
         console.log("chat content chats",userName);
         $('.chat-heading').text(`${userName.userName}`);
-        $('.chat-section-profile').html(`<img src="http://127.0.0.1:3000/${userImg.userImg}" class="mt-2 chat-profile-icon" alt="" style="width:40px;height:40px;margin:10px;float:left;">`);
+        $('.chat-section-profile').html(`<img src="${domainUrl}/${userImg.userImg}" class="mt-2 chat-profile-icon" alt="" style="width:40px;height:40px;margin:10px;float:left;">`);
         let html = '';
         for(let x=0;x<chats.length;x++)
         {
