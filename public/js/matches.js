@@ -38,6 +38,7 @@ $(document).on('click', '#msgBtn', function () {
     //end code for load chat
 });
 
+
 var domainUrl = window.location.protocol + "//" + window.location.host;
 console.log(domainUrl);
 
