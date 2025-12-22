@@ -671,7 +671,7 @@
                 age: u.age || null,           // if you have DOB then I can auto-calculate
                 dist: u.distance ? u.distance + ' km' : '0 km',
                 bio: u.bio || '',
-                photo: `http://127.0.0.1:3000/${u.image}`,
+                photo: `${u.image}`,
                 likeCount: u.likeCount || 0,
                 checkLiked: u.checkLiked || false,
                 is_online: u.is_online,
