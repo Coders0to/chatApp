@@ -626,7 +626,7 @@
 
          const userLat = parseFloat(currentUser.latitude);
          const userLng = parseFloat(currentUser.longitude);
-         const radiusKm = 25;
+         const radiusKm = 75;
          
          const allUsers = await User.find({
              _id: {
