@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 const express = require('express');
 const path = require('path');
 const app = express();
-//mongoose.connect('mongodb://127.0.0.1:27017/quakApp');
+// mongoose.connect('mongodb://127.0.0.1:27017/quakApp');
 if (process.env.MONGO_URI) {
   mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected"))
@@ -18,7 +18,7 @@ const http = require('http').Server(app);
 
 
 // app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const userRoute = require('./routes/userRoute');
 const User = require('./models/userModel');
