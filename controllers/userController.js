@@ -177,7 +177,8 @@
  const homepage = async (req, res) => {
      try {
             return res.render('dateapp-sidebar', {
-                currentRoute: 'homepage'
+                currentRoute: 'homepage',
+                user: req.session.user,
          });
      } catch (error) {
          console.log(error.message);
