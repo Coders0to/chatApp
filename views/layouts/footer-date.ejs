@@ -5,6 +5,7 @@
  - create both hearts and dots
  - random positions, sizes, durations
 ---------------------------- */
+const currentRoute = "<%= currentRoute %>";
 (function createParticles(){
  const parent = document.getElementById('particles');
  const total = 28; // mix hearts + sparkles
@@ -51,35 +52,6 @@ const profiles = [
 ];
 
 
-// fetch('/loadMatchesTem', {
-//     method: 'POST',
-//     headers: {
-//         'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({})
-// })
-//   .then(res => res.json())
-//   .then(data => {
-
-//       if (data && data.profiles && data.profiles.length > 0) {
-//           $('#controlTools').removeClass('d-none');
-//           profiles.length = 0;  
-//           profiles.push(...data.profiles); 
-//           renderStack();  
-//       } else {
-//         $('#controlTools').addClass('d-none');
-//         $('#cardStack').html(`<div class="card" role="article" data-id="1" style="z-index: 100; transform: translateY(0px) scale(1); opacity: 1;height:30% !important;">
-//                                     <div class="photo" style="background-image: url(&quot;http://127.0.0.1:3000/images/no_image.webp&quot;);">
-//                                         <img class="profile-img" alt="Profile Photo" src="http://127.0.0.1:3000/images/no_image.webp"> 
-//                                     </div>
-//                                 </div>`);
-//       }
-      
-      
-//   })
-//   .catch(err => {
-//       console.log("Error:", err);
-//   });
 function loadMatchesTem() {
   fetch('/loadMatchesTem', {
       method: 'POST',
@@ -92,26 +64,31 @@ function loadMatchesTem() {
           $('#controlTools').removeClass('d-none');
           profiles.length = 0;
           profiles.push(...data.profiles);
-          console.log('profiles record',profiles);
           renderStack();
       } else {
           $('#controlTools').addClass('d-none');
           $('#cardStack').html(`
-                <div class="card" role="article" style="height:30% !important;">
-                    <div class="photo" style="background-image: url('http://127.0.0.1:3000/images/no_image.webp');">
-                        <img class="profile-img" src="http://127.0.0.1:3000/images/no_image.webp">
-                    </div>
-                </div>
+                <div class="card-no-profile empty-card" role="article">
+                  <div class="empty-state">
+                      <div class="emoji">⏳</div>
+                      <h3>Wait for new profile</h3>
+                      <p>New profiles will appear here soon</p>
+                      <div class="dots">
+                          <span></span><span></span><span></span>
+                      </div>
+                  </div>
+              </div>
           `);
       }
     })
     .catch(err => console.log("Error:", err));
 }
 
-loadMatchesTem();
-
-
-
+if(currentRoute=='loadMatchesTem')
+{
+  loadMatchesTem();
+  getRecentMatchesList();
+}
 
 const stackEl = document.getElementById('cardStack');
 const tpl = document.getElementById('cardTpl');
@@ -126,7 +103,6 @@ let history = [];
 function createCard(p){
  const node = tpl.content.cloneNode(true).querySelector('.card');
  node.dataset.id = p.id;
- console.log("p data",p);
  node.querySelector('.photo').style.backgroundImage = `url(${p.photo})`;
  node.querySelector('.photo .profile-img').src = p.photo;
  node.querySelector('.cname').textContent = p.name;
@@ -219,18 +195,16 @@ function commitSwipe(id, liked){
 }
 
 function addToRecent(profile,liked){
-getRecentMatchesList();
-// console.log('profile record',profile);
-// console.log('liked record',liked);
-
-//  const item = document.createElement('div');
-//  item.className = 'recent-item';
-//  item.innerHTML = `<img src="${profile.photo}" alt="${profile.name}"><div class='rmeta'><strong>${profile.name}, ${profile.age}</strong><div style="color:var(--muted);font-size:13px">${profile.dist} • ${liked? 'Liked 💖':'Skipped 🙈'}</div></div>`;
-//  recentList.prepend(item);
+  if(currentRoute=='loadMatchesTem'){
+    getRecentMatchesList();
+  }
 }
 
 /* Buttons */
-document.getElementById('likeBtn').addEventListener('click', ()=>{
+
+
+if(currentRoute=='loadMatchesTem'){
+  document.getElementById('likeBtn').addEventListener('click', ()=>{
   chatPanel.classList.remove('open'); chatPanel.setAttribute('aria-hidden','true');
  const top = stackEl.querySelector('.card'); if(!top) return;
  $.ajax({
@@ -238,6 +212,9 @@ document.getElementById('likeBtn').addEventListener('click', ()=>{
         type: 'POST',
         data:{matches_id:top.dataset.id},
         success: function (res) {
+          console.log('like match user ',res);
+          socket.emit('notifyLikedUser',{notify_user_id:res.data.matches_id,receiver_id:res.data.user_id});
+
         },
         error: function (err) {
         }
@@ -277,40 +254,20 @@ viewBtn.addEventListener('click', ()=> {
 });
 
 function openProfile(id){
-//  const p = profiles.find(x=>x.id==id) || history[history.length-1]?.profile;
-//  if(!p) return;
-//  console.log('profiles record',p);
-//  chatAvatar.src = p.photo;
-//  chatName.textContent = `${p.name}, ${p.age}`;
-//  chatBody.innerHTML = `<div style="padding:12px;border-radius:12px;background:rgba(255,255,255,0.02);color:var(--cream)"><strong>About ${p.name}</strong><p style="color:var(--muted);margin-top:6px">${p.bio}</p><p style="color:var(--muted);margin-top:6px">Distance: ${p.dist}</p></div>`;
  chatPanel.classList.add('open'); chatPanel.setAttribute('aria-hidden','false');
 }
 
-/* ***CHANGE 2: Message button now opens an EMPTY chat*** */
- //document.getElementById('msgBtn').addEventListener('click', ()=>{
-  //const top = profiles[0] || history[history.length-1]?.profile; if(!top) return alert('Koi profile available nahi');
-  //chatAvatar.src = top.photo;
-  //chatName.textContent = `${top.name}, ${top.age}`;
-  //chatBody.innerHTML = ''; // <-- Removed the pre-filled message
-  // chatPanel.classList.add('open'); chatPanel.setAttribute('aria-hidden','false');
-  // document.getElementById('chatInput').focus(); // <-- Bonus: focus the input
- //});
-/* close chat */
 document.getElementById('closeChat').addEventListener('click', ()=> {
  chatPanel.classList.remove('open'); chatPanel.setAttribute('aria-hidden','true');
  $('#helpFab').show();
 });
 
-/* send message */
-// document.getElementById('sendBtn').addEventListener('click', ()=>{
-//  const input = document.getElementById('chatInput'); const val = input.value.trim(); if(!val) return;
-//  const el = document.createElement('div'); el.className = 'bubble me'; el.textContent = val; chatBody.appendChild(el); chatBody.scrollTop = chatBody.scrollHeight; input.value = '';
-// });
-
 /* Help modal */
 const helpFab = document.getElementById('helpFab'), helpModal = document.getElementById('helpModal'), closeHelp = document.getElementById('closeHelp');
 helpFab.addEventListener('click', ()=> { helpModal.style.display = 'flex'; helpModal.setAttribute('aria-hidden','false'); });
 closeHelp.addEventListener('click', ()=> { helpModal.style.display = 'none'; helpModal.setAttribute('aria-hidden','true'); });
+
+}
 
 /* keyboard shortcuts */
 window.addEventListener('keydown', (e)=> {
@@ -335,11 +292,16 @@ menuToggle.addEventListener('click', (e) => {
 });
 
 // Bonus: Agar sidebar khula hai aur user main content par click kare, to use band kar de
-document.querySelector('.main-content').addEventListener('click', () => {
-    if (sidebar.classList.contains('sidebar-open')) {
-        //sidebar.classList.remove('sidebar-open');
-    }
-});
+
+
+if(currentRoute=='loadMatchesTem'){
+
+}
+// document.querySelector('.main-content').addEventListener('click', () => {
+//     if (sidebar.classList.contains('sidebar-open')) {
+//         //sidebar.classList.remove('sidebar-open');
+//     }
+// });
 
 function getRecentMatchesList() {
   $.ajax({
@@ -364,7 +326,6 @@ function getRecentMatchesList() {
           recentList.prepend(item);
         });
       } else {
-        console.log("No recent matches found");
       }
     },
     error: function(error) {
@@ -372,7 +333,8 @@ function getRecentMatchesList() {
     }
   });
 }
-getRecentMatchesList();
+
+
 
 function resetAllMatches(){
     $.ajax({
@@ -383,7 +345,6 @@ function resetAllMatches(){
             loadMatchesTem();
             getRecentMatchesList();
       } else {
-        console.log("No recent matches found");
       }
     },
     error: function(error) {
@@ -391,7 +352,22 @@ function resetAllMatches(){
     }
   });
 }
+function getNotification()
+    {
+        $.ajax({
+            url:'getCountNotification',
+            type:'get',
+            success:function(response){
+                if(response.statusCode==200){
+                    $('#countNotify').text(response.notificationCount);
+                }
+            },
+            error:function(error){
 
+            }
+        });
+    }
+    getNotification();
 
 </script>
 </body>
