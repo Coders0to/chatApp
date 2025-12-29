@@ -1,35 +1,38 @@
 const express = require('express');
 const user_route = express();
+//const user_route = express.Router(); 
 const bodyParser = require('body-parser');
 
 const session = require('express-session');
 const { SESSION_SECRET } = process.env;
 user_route.use(session({secret:SESSION_SECRET}));
-
+const upload = require('../middlewares/upload');
 
 user_route.use(bodyParser.json());
 user_route.use(bodyParser.urlencoded( {extended:true} )); 
 
 const docusign = require("docusign-esign");
 
-user_route.set('view engine','ejs');
-user_route.set('views','./views');
+//user_route.set('view engine','ejs');
+//user_route.set('views','./views');
 
 //user_route.use(express.static('public'));
 
-const path = require('path');
-const multer = require('multer');
 
-const storage = multer.diskStorage({
-    destination:function(req, file, cb)
-    {
-        cb(null, path.join(__dirname,'../public/images/'));
-    },
-    filename:function(req,file,cb){
-        const name = Date.now()+'-'+file.originalname;
-        cb(null,name);
-    }
-});
+
+const path = require('path');
+// const multer = require('multer');
+
+// const storage = multer.diskStorage({
+//     destination:function(req, file, cb)
+//     {
+//         cb(null, path.join(__dirname,'../public/images/'));
+//     },
+//     filename:function(req,file,cb){
+//         const name = Date.now()+'-'+file.originalname;
+//         cb(null,name);
+//     }
+// });
 
 const userController = require('../controllers/userController');
 const matchesController = require('../controllers/matchesController');
@@ -37,7 +40,7 @@ const matchesController = require('../controllers/matchesController');
 
 const auth = require('../middlewares/auth')
 
-const upload = multer({storage:storage});
+//const upload = multer({storage:storage});
 user_route.get('/register', auth.isLogout , userController.registerLoad);
 user_route.post('/register',upload.single('image'), userController.register);
 
@@ -67,6 +70,10 @@ user_route.get('/matches',auth.isLogin, userController.loadmMatches);
 user_route.post('/user-liked',auth.isLogin, userController.userAddNewLike);
 user_route.get('/notification',auth.isLogin, userController.notification);
 user_route.post('/notifications',auth.isLogin, userController.getNotifications);
+user_route.get('/getCountNotification',auth.isLogin, userController.getCountNotification);
+user_route.get('/readNotifications',auth.isLogin, userController.readNotifications);
+
+
 
 user_route.get('/iframe', userController.iframe);
 
