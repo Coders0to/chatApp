@@ -1,5 +1,6 @@
  const User = require('../models/userModel');
  const Chat = require('../models/chatModel');
+ var mongoose = require('mongoose');
  const Group = require('../models/groupModel');
  const likeModel = require('../models/likeModel');
  const Response = require('../utils/responseHandler');
@@ -78,12 +79,18 @@
          // group_id: groupId,
          //  ** Create User with assigned group details **
          const passwordHash = await bcrypt.hash(req.body.password, 10);
-         let imagePath = '';
-            if(req.file && req.file.filename){
-                imagePath = 'images/' + req.file.filename;
-            } else {
-                imagePath = ''; 
-            }
+         let imageUrl = '';
+        try {
+            imageUrl = req.file ? req.file.path : '';
+            // return res.json({
+            // success: true,
+            // image: imageUrl
+            // });
+
+        } catch (err) {
+            console.error('❌ REGISTER ERROR:', err);
+            return res.status(500).json({ error: err.message });
+        }
          const user = new User({
              name: req.body.name,
              email: req.body.email,
@@ -93,7 +100,7 @@
              location: req.body.location,
              age: 0,
              bio: '',
-             image: imagePath,
+             image: imageUrl,
              password: passwordHash
          });
          const savedUser = await user.save();
@@ -123,15 +130,9 @@
 
  const notification = async (req,res) => {
    try{
-      const logInUId = req.session.user._id;
-      const notifications = await  Notification.find({sender_id:logInUId}).select('_id title message type is_read created_at');
-      console.log('notifications record ',notifications);
-
-       // return Response.success(res, "All Notification received successful", {notifications:notifications});
-
-       res.render('notification', {
+      res.render('notification', {
                                       currentRoute: '/notification',
-                                      notifications: notifications
+                                      user: req.session.user,
                                  });
    }
    catch (error){
@@ -538,13 +539,7 @@
                  from: likerId,
                  message: 'You loss a like!'
              });
-             // await Notification.create({
-             //   user_id: userId,
-             //   sender_id: likerId,
-             //   title: 'Profile Unliked',
-             //   message: `${likerUser.name} removed their like.`,
-             //   type: 'unlike',
-             // });
+             
 
              return res.status(200).json({
                  statusCode: 400,
@@ -582,6 +577,20 @@
      }
  };
 
+ const readNotifications = async (req,res) => {
+    try{
+        const userId = req.session.user._id;
+        //await Notification.deleteMany({});
+        await Notification.updateMany({user_id: userId,is_read:false},{$set:{is_read: true}});
+        return Response.success(res, "Notification read successful", {
+                     redirect: '/notification',
+                     user: req.session.user,
+                 });
+    }
+    catch(Exception){
+      console.log("notification error",Exception);
+    }
+ }
  const getNotifications = async (req,res) => {
     try{
         const userId = req.session.user._id;
@@ -598,6 +607,7 @@
        return Response.success(res, "Notification received successful", {
                      redirect: '/notification',
                      userNotification:userNotification,
+                     user: req.session.user,
                  });
     }
     catch(Exception){
@@ -662,7 +672,6 @@
          ).filter(user => user !== null);
 
          // Render partial HTML using EJS
-         console.log('u record',nearbyUsers2);
          res.json({
             success: true,
             profiles: nearbyUsers2.map(u => ({
@@ -707,6 +716,21 @@
      }
  };
  //end code for new template
+ 
+ const getCountNotification = async (req,res)=>{
+        const user_id=req.session.user._id;
+        console.log('user_id record',user_id);
+        const notificationCount = await Notification.countDocuments({
+            user_id: new mongoose.Types.ObjectId(user_id),
+            is_read: false,
+        });
+        return res.status(200).json({
+            statusCode: 200,
+            message: 'Notification count gotted successfully',
+            notificationCount:notificationCount,
+        });
+ };
+ // get count notific 
 
  //end code for manage group code
  module.exports = {
@@ -732,4 +756,6 @@
      homepage,
      loadMatchesTem,
      goToMatches,
+     getCountNotification,
+     readNotifications,
  }
