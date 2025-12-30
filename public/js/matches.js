@@ -145,7 +145,7 @@ var domainUrl = window.location.protocol + "//" + window.location.host;
                     scrollChat();
         }
     });
-    socket.on('user-not-typing-res2',function(receiver_id){
+    socket.on('user-not-typing-res',function(receiver_id){
         if(sender_id == receiver_id)
         {
             $('.show-hide').hide();
