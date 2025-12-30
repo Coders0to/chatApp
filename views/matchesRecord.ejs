@@ -59,6 +59,8 @@
 
 <button class="help-fab" id="helpFab" aria-label="Help">?</button>
 
+
+
 <div class="help-modal" id="helpModal" role="dialog" aria-hidden="true">
  <div class="help-card" role="document">
   <h3>💖 How It Works (Hinglish)</h3>
@@ -80,7 +82,7 @@
   <input type="hidden" class="userUId">
   <div class="photo">
     <img class="profile-img" alt="Profile Photo" src=""> <div class="badge">Online</div>
-    <div class="badge">Online</div></div>
+    <div class="badge userStatus">Online</div></div>
   <div class="info">
    <div>
     <h3><span class="cname">Name</span>, <span class="cage">25</span></h3>
@@ -93,7 +95,7 @@
  </div>
 </template>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 
 <script>
@@ -109,5 +111,5 @@
     sender_id = '<%= user._id %>';     
 </script>
 
-<script src="/js/matches.js"></script>
+<script src="js/matches.js"></script>
 <%- include('layouts/footer-date.ejs') %>
