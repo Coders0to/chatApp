@@ -135,7 +135,7 @@ var domainUrl = window.location.protocol + "//" + window.location.host;
     socket.on('user-typing-res',function(receiver_id){
         if(sender_id == receiver_id)
         {
-            let html = `<div class="typing">
+            let html = `<div class="typing show-hide">
                                     <span></span>
                                     <span></span>
                                     <span></span>
