@@ -133,7 +133,6 @@ var domainUrl = window.location.protocol + "//" + window.location.host;
         socket.emit('user-not-typing',receiver_id);
     });
     socket.on('user-typing-res',function(receiver_id){
-        alert("d");
         if(sender_id == receiver_id)
         {
             let html = `<div class="distance-user-chat show-hide" >
