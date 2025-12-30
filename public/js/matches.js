@@ -3,7 +3,6 @@ $(document).on('click', '#viewBtn', function () {
     $('.chat-input').hide();
     //end this 
     const profileInfo = profiles[profiles.length - 1];
-    console.log('profileInfo record view',profileInfo);
     $('#chatName').text(profileInfo ? profileInfo.name : '' );
     $('#chatAvatar').attr('src',profileInfo.photo);
     $('#chatBody').html(`
@@ -14,15 +13,13 @@ $(document).on('click', '#viewBtn', function () {
         </div>
     `);
 });
-
 $(document).on('click', '#msgBtn', function () {
     $('#helpFab').hide();
     $('.chat-input').show();
     const chatPanel = document.getElementById('chatPanel');
     const profileInfo = profiles[profiles.length - 1];
-    console.log('profileInfo record',profileInfo);
-    const userStatus = profileInfo.is_online == 1 ? 'Active' : 'Offline';
-    $('#active-status').text(userStatus);
+    const isActive = $('#'+profileInfo.id+'-status').text().trim();
+    $('#active-status').text(isActive);
     $('#chatName').text(profileInfo.name+ ''+(profileInfo.age ? profileInfo.age +', ' : '' ));
     $('#chatAvatar').attr('src',profileInfo.photo);
     chatPanel.classList.add('open'); chatPanel.setAttribute('aria-hidden','false');
@@ -40,14 +37,12 @@ $(document).on('click', '#msgBtn', function () {
 
 
 var domainUrl = window.location.protocol + "//" + window.location.host;
-console.log(domainUrl);
 
 //display old chat 
     socket.on('loaChats',function(loadchat,userName,userImg)
     {
         $('#chatBody').html(' ');
         var chats = loadchat.chats;
-        console.log("chat content chats",userName);
         $('.chat-heading').text(`${userName.userName}`);
         $('.chat-section-profile').html(`<img src="${domainUrl}/${userImg.userImg}" class="mt-2 chat-profile-icon" alt="" style="width:40px;height:40px;margin:10px;float:left;">`);
         let html = '';
@@ -74,8 +69,6 @@ console.log(domainUrl);
             html += `</div>`;
             
         }
-        console.log("chat content",html);
-
         $('#chatBody').append(html);
         scrollChat();
         
@@ -138,9 +131,9 @@ console.log(domainUrl);
     });
     input.addEventListener("blur", () => {
         socket.emit('user-not-typing',receiver_id);
-        console.log("Input field is not focused");
     });
     socket.on('user-typing-res',function(receiver_id){
+        alert("d");
         if(sender_id == receiver_id)
         {
             let html = `<div class="distance-user-chat show-hide" >
@@ -157,4 +150,22 @@ console.log(domainUrl);
             scrollChat();
         }
     });
-
+    socket.on('notifyUser-res',function(notify_user_id,notificationCount){
+        if(sender_id==notify_user_id){
+            console.log('notificationCount',notificationCount);
+            $('#countNotify').text(notificationCount);
+        }
+    });
+    //update user online status
+    socket.on('getOnlineUser',function(data){
+        $('#'+data.user_id+'-status').text('Online');
+        $('#'+data.user_id+'-status').addClass('online-status');
+        $('#'+data.user_id+'-status').removeClass('offline-status');
+    });
+    //update user offline status
+    socket.on('getOflineUser',function(data){
+        $('#'+data.user_id+'-status').text('Offline');
+        $('#'+data.user_id+'-status').addClass('offline-status');
+        $('#'+data.user_id+'-status').removeClass('online-status');
+    });
+    
