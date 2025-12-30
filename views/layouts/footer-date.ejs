@@ -101,10 +101,26 @@ const chatBody = document.getElementById('chatBody');
 let history = [];
 
 function createCard(p){
+  console.log('p record',p);
  const node = tpl.content.cloneNode(true).querySelector('.card');
  node.dataset.id = p.id;
  node.querySelector('.photo').style.backgroundImage = `url(${p.photo})`;
  node.querySelector('.photo .profile-img').src = p.photo;
+
+ const photoEl = node.querySelector('.photo');
+ const statusId = `${p.id}-status`;
+ let statusEl = photoEl.querySelector('.userStatus');
+ if (!statusEl) {
+        statusEl = document.createElement('span');
+        statusEl.className = 'userStatus';
+        photoEl.appendChild(statusEl);
+    }
+  statusEl.id = statusId;
+  statusEl.textContent = p.is_online == 1 ? 'Online' : 'Offline';
+  statusEl.classList.toggle('online', p.is_online == 1);
+  statusEl.classList.toggle('offline', p.is_online != 1);
+
+ node.querySelector('.photo .userStatus').textContent = p.is_online == 1 ? 'Online' : 'Offline';
  node.querySelector('.cname').textContent = p.name;
  node.querySelector('.cage').textContent = p.age;
  node.querySelector('.cdistance').textContent = p.dist;
@@ -212,7 +228,6 @@ if(currentRoute=='loadMatchesTem'){
         type: 'POST',
         data:{matches_id:top.dataset.id},
         success: function (res) {
-          console.log('like match user ',res);
           socket.emit('notifyLikedUser',{notify_user_id:res.data.matches_id,receiver_id:res.data.user_id});
 
         },
