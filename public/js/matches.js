@@ -135,14 +135,17 @@ var domainUrl = window.location.protocol + "//" + window.location.host;
     socket.on('user-typing-res',function(receiver_id){
         if(sender_id == receiver_id)
         {
-            let html = `<div class="distance-user-chat show-hide" >
-                                 <img src="../images/typing-dots.gif" style="width:100px;height:50px;">
-                                </div>`;
+            let html = `<div class="typing">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                    </div>
+                                `;
                     $('#chat-container').append(html);
                     scrollChat();
         }
     });
-    socket.on('user-not-typing-res',function(receiver_id){
+    socket.on('user-not-typing-res2',function(receiver_id){
         if(sender_id == receiver_id)
         {
             $('.show-hide').hide();
