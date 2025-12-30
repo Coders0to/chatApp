@@ -5,21 +5,17 @@ function getNotifications()
         type:'post',
         success:function(response){
             if (response.success) {
-                    const listEl = document.getElementById("notification-list");
+                    const listEl = document.getElementById("notification-list2");
                     const countEl = document.getElementById("notification-count");
-
-                    // Clear existing notifications
                     listEl.innerHTML = "";
-
-                    // Update count badge
                     countEl.textContent = response.data.userNotification.length;
                     $('.notification-count').text(response.data.userNotification.length);
-                    // Loop through notifications
                     response.data.userNotification.forEach(notif => {
                         const notifClass = notif.is_read ? "notification" : "notification unread";
+                        // <div class="avatar"><img src="${notif.sender_id.image}"></div>
                         const notifHTML = `
                         <div class="${notifClass}">
-                            <div class="avatar"><img src="${notif.sender_id.image}"></div>
+                            
                             <div class="content">
                             <div class="meta">
                                 <span class="heading">${notif.title}</span>
@@ -29,12 +25,11 @@ function getNotifications()
                             </div>
                         </div>
                         `;
-                        listEl.insertAdjacentHTML("beforeend", notifHTML);
+                        //listEl.innerHTML = notifHTML;
+                         listEl.insertAdjacentHTML("beforeend", notifHTML);
                     });
-                    }
-
-            //console.log('success',success);
-            //alert('success');
+                    readNotifications();
+                }
         },
         error:function(error){
             console.log('error',error);
@@ -42,3 +37,20 @@ function getNotifications()
     });
 }
 getNotifications();
+
+function readNotifications()
+{
+    $.ajax({
+        url:'/readNotifications',
+        type:'get',
+        success:function(response){
+            if (response.success) {
+                   
+                }
+        },
+        error:function(error){
+            console.log('error',error);
+        }
+    });
+}
+
