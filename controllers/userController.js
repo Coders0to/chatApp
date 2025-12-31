@@ -203,7 +203,6 @@
              if (passwordMatch) {
                  req.session.user = userData;
                  return Response.success(res, "Login successful", {
-                     // redirect: '/dashboard'
                          redirect: '/loadMatchesTem'
 
                  });
@@ -712,7 +711,6 @@
              currentRoute: 'loadMatchesTem'
          });
      } catch (error) {
-         console.log(error.message);
          return res.status(500).send("Internal Server Error");
      }
  };
@@ -720,7 +718,6 @@
  
  const getCountNotification = async (req,res)=>{
         const user_id=req.session.user._id;
-        console.log('user_id record',user_id);
         const notificationCount = await Notification.countDocuments({
             user_id: new mongoose.Types.ObjectId(user_id),
             is_read: false,
@@ -730,7 +727,46 @@
             message: 'Notification count gotted successfully',
             notificationCount:notificationCount,
         });
- };
+    };
+
+    //function for user profile
+    const getProfile = async (req, res) => {
+        try {
+            const userId = req.body.user_id;
+
+            // (Optional) validate user exists
+            const user = await User.findById(userId);
+            if (!user) {
+            return res.status(404).send('User not found');
+            }
+
+            // Redirect to profile URL
+            res.redirect(`/profile/${userId}`);
+
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
+    };
+
+   const profilePage = async (req, res) => {
+    try {
+        const user = req.session.user; // ya JWT se
+
+        res.render('profile', {
+        title: 'Profile',
+        user,
+        currentRoute: 'loadMatchesTem'  
+        });
+
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+    };
+
+
+
+    //end code for user profile
+
  // get count notific 
 
  //end code for manage group code
@@ -759,4 +795,6 @@
      goToMatches,
      getCountNotification,
      readNotifications,
+     getProfile,
+     profilePage
  }
