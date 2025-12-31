@@ -105,28 +105,12 @@ function createCard(p){
  const node = tpl.content.cloneNode(true).querySelector('.card');
  node.dataset.id = p.id;
  node.querySelector('.photo').style.backgroundImage = `url(${p.photo})`;
- //node.querySelector('.photo .profile-img').src = p.photo;
-
  $(node)
   .find('.photo .profile-img')
   .attr('src', p.photo)
   .on('click', function () {
-    console.log('Image clicked', p);
-    window.location.href = '/profile/' + p.id;
-
-    // $.ajax({
-    //   url:'/profile/'+p.id,
-    //   type:'post',
-    //   data:{user_id:p.id},
-    //   success:function(response){
-    //     console.log('get profile success response',response);
-    //   },
-    //   error:function(error){
-    //     console.log('get profile error',error);
-    //   }
-    // });
+    window.open('/profile/' + p.id, '_blank');
   });
-
  const photoEl = node.querySelector('.photo');
  const statusId = `${p.id}-status`;
  let statusEl = photoEl.querySelector('.userStatus');
@@ -289,7 +273,7 @@ viewBtn.addEventListener('click', ()=> {
 });
 
 function openProfile(id){
- chatPanel.classList.add('open'); chatPanel.setAttribute('aria-hidden','false');
+ //chatPanel.classList.add('open'); chatPanel.setAttribute('aria-hidden','false');
 }
 
 document.getElementById('closeChat').addEventListener('click', ()=> {
