@@ -1,0 +1,71 @@
+<%- include('layouts/header-date.ejs') %>
+
+<link rel="stylesheet" href="/public/css/profile.css">
+
+<main class="main-content">
+
+  <!-- PAGE CONTENT -->
+  <div class="profile-wrapper">
+
+    <!-- Left Image Section -->
+    <div class="image-card">
+      <img src="<%= user.photo %>" class="profile-img">
+
+      <div class="image-list">
+        <% if (user.photos && user.photos.length) { %>
+          <% user.photos.forEach(img => { %>
+            <img src="<%= img %>">
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Right Info Section -->
+    <div class="info-card">
+
+      <div class="top">
+        <h1>
+          <%= user.name %>
+          <span><%= user.age %> 26</span>
+        </h1>
+        <p>📍 <%= user.city %>, <%= user.country %> Aligarh U.P</p>
+      </div>
+
+      <div class="status">
+        <span class="online"></span> Online now
+      </div>
+
+      <div class="bio">
+        <h3>Bio</h3>
+        <p><%= user.bio %></p>
+      </div>
+
+      <div class="info-grid">
+        <div><strong>Height</strong><span><%= user.height %></span></div>
+        <div><strong>Profession</strong><span><%= user.profession %></span></div>
+        <div><strong>Education</strong><span><%= user.education %></span></div>
+        <div><strong>Goal</strong><span><%= user.goal %></span></div>
+      </div>
+
+      <div class="interest">
+        <% if (user.interests && user.interests.length) { %>
+          <% user.interests.forEach(i => { %>
+            <span><%= i %></span>
+          <% }) %>
+        <% } %>
+      </div>
+
+      <div class="actions">
+        <button class="like" data-id="<%= user._id %>">💖 Like</button>
+        <button class="chat">💬 Chat</button>
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+<%- include('layouts/footer-date.ejs') %>
+
+<script src="/public/js/profile.js"></script>
