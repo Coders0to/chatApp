@@ -37,7 +37,6 @@ const path = require('path');
 const userController = require('../controllers/userController');
 const matchesController = require('../controllers/matchesController');
 
-
 const auth = require('../middlewares/auth')
 
 //const upload = multer({storage:storage});
@@ -56,6 +55,13 @@ user_route.get('/loadMatches-test',auth.isLogin, userController.loadUserMatchesT
 
 //route for new template
 user_route.get('/homepage',auth.isLogin, userController.homepage);
+user_route.get('/go-profile/:userId', auth.isLogin, (req, res) => {
+  const { userId } = req.params;
+  res.redirect(`/profile/${userId}`);
+});
+
+user_route.post('/getProfile',auth.isLogin, userController.getProfile);
+user_route.get('/profile/:userId', auth.isLogin, userController.profilePage);
 user_route.get('/loadMatchesTem',auth.isLogin, userController.goToMatches);
 user_route.post('/loadMatchesTem',auth.isLogin, userController.loadMatchesTem);
 user_route.post('/likeRecord',auth.isLogin, matchesController.liked);
