@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js" integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
-<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/public/css/common.css">
 
 </head>
 <body>
@@ -23,16 +23,24 @@
  <button class="menu-toggle" aria-label="Toggle Menu">☰</button>
 </header>
 
+
 <nav class="sidebar sidebar-open" aria-label="Admin Menu">
   <ul class="sidebar-nav" id="header-li-section">
     <li><a href="homepage" class="<%= currentRoute === 'homepage' ? 'active' : '' %>"><span class="icon">🏠</span> Homepage</a></li>
     <li><a href="/loadMatchesTem" class="<%= currentRoute === 'loadMatchesTem' ? 'active' : '' %>"><span class="icon">❤️</span> Matches</a></li>
     <li><a href="/notification"><span class="<%= currentRoute === 'notification' ? 'active' : '' %>">🔔</span> Notifications <span class="badge" id="countNotify"></span></a></li>
+    <li><a href="/profile" class="<%= currentRoute === 'profile' ? 'active' : '' %>"><span class="icon">❤️</span> My Profile</a></li>
+
   </ul>
   <ul class="sidebar-nav logout">
     <li><a href="/logout"><span class="icon">🚪</span> Logout</a></li>
   </ul>
 </nav>
+
+<!-- botão flutuante whatsapp -->
+<a href="https://api.whatsapp.com/send?phone=51000000000&text=olá" class="whatsapp-button" target="_blank" style="position: fixed;  right: 15px; bottom: 15px;z-index:9999;">
+  <img src="https://i.ibb.co/VgSspjY/whatsapp-button.png" alt="botão whatsapp">
+</a>
 
 
 
