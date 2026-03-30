@@ -1,0 +1,85 @@
+<%- include('layouts/header-date.ejs') %>
+<link rel="stylesheet" href="public/css/profile.css">
+
+<main class="main-content">
+    <div class="wrapper">
+    <!-- LEFT -->
+    <div class="left">
+        <img id="mainImg" class="main-img" src="https://via.placeholder.com/600x800">
+
+        <div id="thumbs" class="thumbs">
+            <!-- thumbnails will be injected here -->
+        </div>
+
+        <div class="upload">
+            <label for="photos">Upload Photos <%= userProfile._doc.age  %></label>
+            <input type="file" id="photos" accept="image/*" multiple>
+        </div>
+    </div>
+
+
+    <!-- RIGHT -->
+    <div class="right">
+        <h2>Edit Profile</h2>
+
+        <form class="form" id="profileForm" enctype="multipart/form-data">
+
+            <div class="row">
+                <div class="field">
+                <label>Name</label>
+                <input type="text" name="name" value="<%= userProfile._doc.name  %>" placeholder="Full Name">
+                </div>
+                <div class="field">
+                <label>Age</label>
+                <input type="number" name="age" value="<%= userProfile.profile.age  %>" placeholder="Age">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                <label>Location</label>
+                <input type="text" name="location" id="locationInput" value="<%= userProfile._doc.location  %>"  placeholder="Location">
+                <div id="locationSuggestions"></div>
+                </div>
+                <div class="field">
+                <label>Height</label>
+                <input type="text" name="height" value="<%= userProfile.profile.height  %>" placeholder="Height">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                <label>Profession</label>
+                <input type="text" name="profession" value="<%= userProfile.profile.profession  %>" placeholder="Profession">
+                </div>
+                <div class="field">
+                <label>Education</label>
+                <input type="text" name="education" value="<%= userProfile.profile.education  %>" placeholder="Education">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                <label>Goal</label>
+                <select name="goal">
+                    <option value="Long-term">Long-term</option>
+                    <option value="Short-term">Short-term</option>
+                    <option value="Friendship">Friendship</option>
+                </select>
+                </div>
+                <div class="field">
+                <label>Bio</label>
+                <textarea name="bio" placeholder="Bio"><%= userProfile.profile.bio  %></textarea>
+                </div>
+            </div>
+            <div class="actions">
+                <button type="button" id="saveProfile">Save Changes</button>
+            </div>
+        </form>
+
+    </div>
+
+    </div>
+</main>
+<script src="js/common.js"></script>
+<script src="/public/js/profile.js"></script>
