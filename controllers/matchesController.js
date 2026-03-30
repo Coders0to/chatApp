@@ -2,6 +2,8 @@
  const User = require('../models/userModel');
  const likeModel = require('../models/likeModel');
  const Notification = require('../models/notificationModel');
+ const axios = require('axios');
+const { name } = require('ejs');
 
 //   const liked = async (req, res) => {
 //       try {
@@ -162,20 +164,107 @@ const resetAllMatches = async (req, res) => {
         });
     }
 };
+  const getUserSpecInfoData = async (req, res) => {
+    try {
+      const userId = req.query.userId;
 
-  const getUserSpecInfo = async (req,res) => {
-      const userId = req.body.userId;
-      const specUserRecord = User.findById({userId});
-  }
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          message: 'userId is required'
+        });
+      }
 
-  const userTest = async (req,res) => {
-    const userDistance = req.body.distance;
+      const userData = await User.findById(userId); 
+
+      if (!userData) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      console.log('userData', userData);
+
+      return res.status(200).json({
+        success: true,
+        data: userData
+      });
+
+    } catch (error) {
+      console.error('getUserSpecInfoData error:', error);
+
+      return res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
   };
 
+  const getUsers = async (req, res) => {
+    res.render('chatUsers', { currentRoute: 'chatUsers',
+                user: req.session.user });
+  }
+
+  const datingReply = async (req, res) => {
+    try {
+      const userMessage = "Hii kesi ho aap ?" ; //req.body.message
+      console.log('key record',process.env.OPENAI_API_KEY);
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: "gpt-4.1-mini",
+          messages: [
+            {
+              role: "system",
+              content: "You are a sweet, romantic, caring dating partner. Reply in flirty but respectful tone. Use emojis sometimes."
+            },
+            {
+              role: "user",
+              content: userMessage
+            }
+          ]
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const reply = response.data.choices[0].message.content;
+
+      // JSON response
+      res.json({
+        success: true,
+        reply: reply
+      });
+
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      res.status(500).json({
+        success: false,
+        error: "AI reply failed"
+      });
+    }
+  };
+
+  const testQuery = async (req,res) => {
+      const userId = '694bca124b37120a41a54b2b'; // req.session.user._id;
+        //const userRecord = await a User.find({email:'aman@gmail.com'});
+        const userRecord = await User.findById(userId).select('name email');
+        // await  User.updateOne( {email:'aman@gmail.com'},{ $set:{email:'deva@gmail.com',name:'deva'}});
+        await User.create({name:'developer', email:'developer@gmail.com', gender:'male',password:'12345678'});
+        console.log('logged in user id',userRecord);
+  }
   
   module.exports = {
     liked,
     getRecentMatchesList,
     resetAllMatches,
-    getUserSpecInfo,
+    getUserSpecInfoData,
+    getUsers,
+    datingReply,
+    testQuery,
   }
