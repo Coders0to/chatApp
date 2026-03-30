@@ -1,0 +1,70 @@
+<%- include('layouts/header-date.ejs') %>
+<main class="main-content">
+    <div class="dating-chat-page">
+        <div class="chat-wrapper">
+        <div class="sidebar-panel">
+            <div class="search">
+                <input type="text" placeholder="Search your match...">
+            </div>
+            <div class="user" onclick="openChat('Ananya')">
+                <img src="https://i.pravatar.cc/150?img=32">
+                <div class="user-info">
+                    <h4>Ananya</h4>
+                    <p>Hey handsome ❤️</p>
+                </div>
+                <div class="unseen">3</div>
+            </div>
+
+            <div class="user" onclick="openChat('Neha')">
+                <img src="https://i.pravatar.cc/150?img=47">
+                <div class="user-info">
+                    <h4>Neha</h4>
+                    <p>Miss you 😘</p>
+                </div>
+                <div class="unseen">1</div>
+            </div>
+        </div>
+
+        <div class="chat-area">
+            <div class="chat-header" id="chatHeader">
+                <img src="https://i.pravatar.cc/150?img=32">
+                <h3 id="chatName">Ananya</h3>
+            </div>
+
+            <div class="messages" id="messages">
+                <div class="msg received">Hi ❤️</div>
+                <div class="msg sent">Hello 😊</div>
+            </div>
+
+            <div class="chat-input">
+                <input type="text" id="msgInput" placeholder="Type your message...">
+                <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+    </div>
+    </div>
+    
+</main>
+
+
+<script>
+function openChat(name){
+    document.getElementById('chatName').innerText=name;
+    document.getElementById('messages').innerHTML=
+    `<div class="msg received">Hey ${name} 💕</div>
+     <div class="msg sent">Hi 😍</div>`;
+}
+
+function sendMessage(){
+    let input=document.getElementById('msgInput');
+    if(input.value.trim()!=""){
+        let div=document.createElement('div');
+        div.className="msg sent";
+        div.innerText=input.value;
+        document.getElementById('messages').appendChild(div);
+        input.value="";
+    }
+}
+</script>
+<script src="public/js/common.js"></script>
