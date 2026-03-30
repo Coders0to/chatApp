@@ -21,25 +21,12 @@ user_route.set('views','./views');
 
 
 const path = require('path');
-// const multer = require('multer');
-
-// const storage = multer.diskStorage({
-//     destination:function(req, file, cb)
-//     {
-//         cb(null, path.join(__dirname,'../public/images/'));
-//     },
-//     filename:function(req,file,cb){
-//         const name = Date.now()+'-'+file.originalname;
-//         cb(null,name);
-//     }
-// });
 
 const userController = require('../controllers/userController');
 const matchesController = require('../controllers/matchesController');
 
 const auth = require('../middlewares/auth')
 
-//const upload = multer({storage:storage});
 user_route.get('/register', auth.isLogout , userController.registerLoad);
 user_route.post('/register',upload.single('image'), userController.register);
 
@@ -67,7 +54,14 @@ user_route.post('/loadMatchesTem',auth.isLogin, userController.loadMatchesTem);
 user_route.post('/likeRecord',auth.isLogin, matchesController.liked);
 user_route.get('/getRecentMatchesList',auth.isLogin, matchesController.getRecentMatchesList);
 user_route.get('/resetAllMatches',auth.isLogin, matchesController.resetAllMatches);
-user_route.get('/getUserSpecInfo',auth.isLogin, matchesController.getUserSpecInfo);
+user_route.get('/getUserSpecInfoData',auth.isLogin, matchesController.getUserSpecInfoData);
+user_route.get('/profile',auth.isLogin, userController.myProfile);
+user_route.post('/updateProfile',upload.array('moreImg', 5),userController.updateProfile);
+user_route.get('/users',auth.isLogin, matchesController.getUsers);
+user_route.get('/datingReply',auth.isLogin, matchesController.datingReply);
+user_route.get('/testCode', matchesController.testQuery);
+
+
 
 
 //end route for new template
