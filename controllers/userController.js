@@ -6,6 +6,8 @@
  const Response = require('../utils/responseHandler');
  const Notification = require('../models/notificationModel');
  const Matches = require('../models/scanMatches');
+ const userDetail = require('../models/userDetails');
+
  const bcrypt = require('bcrypt');
 
  const registerLoad = async (req, res) => {
@@ -50,45 +52,12 @@
  };
  const register = async (req, res) => {
      try {
-
-        //  let groupId = req.body.group_id;
-        //  let groupCode = null;
-        //  if (req.body.group_type == 1) {
-        //      const existingGroup = await Group.findOne({
-        //          name: req.body.group_name
-        //      });
-        //      if (!existingGroup) {
-        //          return res.status(400).send({
-        //              success: false,
-        //              msg: "Group not found!"
-        //          });
-        //      }
-        //      groupId = existingGroup._id; // Assign existing group's ID
-        //      groupCode = existingGroup.group_code; // Assign existing group's code
-        //  } else if (req.body.group_type == 2) {
-        //      const uniqueCode = await generateUniqueCode();
-        //      const newGroup = new Group({
-        //          name: uniqueCode,
-        //          userid: 0,
-        //      });
-
-        //      const savedGroup = await newGroup.save();
-        //      groupId = savedGroup._id;
-        //      groupCode = savedGroup.group_code; // Assign newly created group’s code
-        //  }
-         // group_id: groupId,
-         //  ** Create User with assigned group details **
          const passwordHash = await bcrypt.hash(req.body.password, 10);
          let imageUrl = '';
         try {
             imageUrl = req.file ? req.file.path : '';
-            // return res.json({
-            // success: true,
-            // image: imageUrl
-            // });
-
         } catch (err) {
-            console.error('❌ REGISTER ERROR:', err);
+            console.error(' REGISTER ERROR:', err);
             return res.status(500).json({ error: err.message });
         }
          const user = new User({
@@ -98,23 +67,14 @@
              latitude: req.body.latitude, //27.8973944,
              longitude: req.body.longitude, //78.0880129
              location: req.body.location,
-             age: 0,
-             bio: '',
              image: imageUrl,
              password: passwordHash
          });
          const savedUser = await user.save();
-        //  if (req.body.group_type == 2) {
-        //      await Group.findByIdAndUpdate(groupId, {
-        //          userid: savedUser._id
-        //      });
-        //  }
-         // res.redirect('/register',{message:"User Register Successfully !!"});
          return Response.success(res, "User registered successfully!", {
              statusCode: 200,
              redirect: '/'
          });
-         // return Response.success(res, "Login successful", { redirect: '/dashboard' });
      } catch (err) {
         if (err.name === 'ValidationError') {
         const errors = Object.values(err.errors).map(e => {
@@ -763,11 +723,59 @@
     }
     };
 
+    const myProfile = async (req, res) => {
+        try {
+            if (!req.session?.user?._id) {
+            return res.redirect('/login');
+            }
+            //await userDetail.deleteMany({user_id:req.session?.user?._id});
+            const user = req.session.user;
+            const userId = req.session.user._id;
+            const userRecord = await User.findById(userId).select('_id name email image age gender');
+            const userDetailRecord = await userDetail.findOne({user_id:userId}).lean();
+            const responseData = {
+                                    ...userRecord,
+                                    profile: userDetailRecord || {}
+                                    };
+            console.log('responseData',responseData);
+            res.render('update-profile', {userProfile: responseData,user,currentRoute: 'loadMatchesTem'});
 
-
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Something went wrong');
+        }
+    };
+    
+   const updateProfile = async (req, res) => {
+    try {
+        console.log('REQ BODY', req.body);
+        const userId = req.session.user._id;
+        const userData = {
+        user_id: req.session.user._id, 
+        name: req.body.name,
+        location: req.body.location,
+        bio: req.body.bio,
+        age: req.body.age,
+        height: req.body.height,
+        education: req.body.education,
+        profession: req.body.profession,
+        goal: req.body.goal,
+        interests: req.body.interests || [],
+        moreImg: []
+        };
+        const resultUser = await User.findOneAndUpdate({_id:userId},{$set:userData},{upsert: true, new:true});
+        const result = await userDetail.findOneAndUpdate({user_id:userId},{$set:userData},{upsert: true, new:true});
+        res.json({
+        success: true,
+        data: result
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+    };
     //end code for user profile
 
- // get count notific 
 
  //end code for manage group code
  module.exports = {
@@ -796,5 +804,7 @@
      getCountNotification,
      readNotifications,
      getProfile,
-     profilePage
+     profilePage,
+     myProfile,
+     updateProfile,
  }
